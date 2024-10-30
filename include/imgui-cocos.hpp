@@ -22,6 +22,7 @@ private:
 	bool m_forceLegacy = false;
 	std::function<void()> m_setupCall, m_drawCall;
 	InputMode m_inputMode = InputMode::Default;
+	ImGuiMouseCursor m_lastCursor = ImGuiMouseCursor_COUNT;
 
 	ImGuiCocos();
 

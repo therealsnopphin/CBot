@@ -32,6 +32,45 @@ static T fromGLTexture(GLuint tex) {
 	}
 }
 
+#if defined(GEODE_IS_WINDOWS) && GEODE_COMP_GD_VERSION == 22060
+
+#define MAT_SUPPORTS_CURSOR
+
+// we dont have easy access to any of the glfw methods,
+// so just directly access the glfwWindow struct, thus making this windows 2.206 only, for now
+struct GLFWCursorData {
+	void* next = nullptr;
+	HCURSOR cursor;
+};
+
+static void setMouseCursor(ImGuiMouseCursor cursor) {
+	auto* glfwWindow = CCEGLView::get()->getWindow();
+
+	auto& cursorField = *reinterpret_cast<GLFWCursorData**>(reinterpret_cast<uintptr_t>(glfwWindow) + 0x50);
+	auto winCursor = IDC_ARROW;
+	switch (cursor) {
+		case ImGuiMouseCursor_Arrow: winCursor = IDC_ARROW; break;
+		case ImGuiMouseCursor_TextInput: winCursor = IDC_IBEAM; break;
+		case ImGuiMouseCursor_ResizeAll: winCursor = IDC_SIZEALL; break;
+		case ImGuiMouseCursor_ResizeEW: winCursor = IDC_SIZEWE; break;
+		case ImGuiMouseCursor_ResizeNS: winCursor = IDC_SIZENS; break;
+		case ImGuiMouseCursor_ResizeNESW: winCursor = IDC_SIZENESW; break;
+		case ImGuiMouseCursor_ResizeNWSE: winCursor = IDC_SIZENWSE; break;
+		case ImGuiMouseCursor_Hand: winCursor = IDC_HAND; break;
+		case ImGuiMouseCursor_NotAllowed: winCursor = IDC_NO; break;
+	}
+	if (cursorField) {
+		cursorField->cursor = LoadCursor(NULL, winCursor);
+	} else {
+		// must be heap allocated
+		cursorField = new GLFWCursorData {
+			.next = nullptr,
+			.cursor = LoadCursor(NULL, winCursor)
+		};
+	}
+}
+#endif
+
 ImGuiCocos& ImGuiCocos::get() {
 	static ImGuiCocos inst;
 	return inst;
@@ -62,6 +101,11 @@ void ImGuiCocos::setVisible(bool v) {
 		io.WantCaptureKeyboard = false;
 		io.WantCaptureMouse = false;
 		io.WantTextInput = false;
+
+#ifdef MAT_SUPPORTS_CURSOR
+		setMouseCursor(ImGuiMouseCursor_Arrow);
+		m_lastCursor = ImGuiMouseCursor_COUNT;
+#endif
 	}
 }
 
@@ -233,6 +277,14 @@ void ImGuiCocos::newFrame() {
 	io.KeyAlt = kb->getAltKeyPressed() || kb->getCommandKeyPressed(); // look
 	io.KeyCtrl = kb->getControlKeyPressed();
 	io.KeyShift = kb->getShiftKeyPressed();
+
+#ifdef MAT_SUPPORTS_CURSOR
+	auto cursor = io.MouseDrawCursor ? ImGuiMouseCursor_None : ImGui::GetMouseCursor();
+	if (cursor != m_lastCursor) {
+		m_lastCursor = cursor;
+		setMouseCursor(cursor);
+	}
+#endif
 }
 
 static bool hasExtension(const std::string_view ext) {
