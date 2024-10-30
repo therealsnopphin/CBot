@@ -30,14 +30,21 @@ class $modify(CCMouseDispatcher) {
 	}
 };
 
+// 2.2 adds some new arguments to the dispatchers
+#if GEODE_COMP_GD_VERSION >= 22000
+	#define IF_2_2(...) __VA_ARGS__
+#else
+	#define IF_2_2(...)
+#endif
+
 class $modify(CCIMEDispatcher) {
-	void dispatchInsertText(const char* text, int len, enumKeyCodes keys) {
+	void dispatchInsertText(const char* text, int len IF_2_2(, enumKeyCodes keys)) {
 		if (!ImGuiCocos::get().isInitialized())
-			return CCIMEDispatcher::dispatchInsertText(text, len, keys);
+			return CCIMEDispatcher::dispatchInsertText(text, len IF_2_2(, keys));
 
 		auto& io = ImGui::GetIO();
 		if (!io.WantCaptureKeyboard) {
-			CCIMEDispatcher::dispatchInsertText(text, len, keys);
+			CCIMEDispatcher::dispatchInsertText(text, len IF_2_2(, keys));
 		}
 		std::string str(text, len);
 		io.AddInputCharactersUTF8(str.c_str());
@@ -89,9 +96,9 @@ bool shouldBlockInput() {
 }
 
 class $modify(CCKeyboardDispatcher) {
-	bool dispatchKeyboardMSG(enumKeyCodes key, bool down, bool idk) {
+	bool dispatchKeyboardMSG(enumKeyCodes key, bool down IF_2_2(, bool repeat)) {
 		if (!ImGuiCocos::get().isInitialized())
-			return CCKeyboardDispatcher::dispatchKeyboardMSG(key, down, idk);
+			return CCKeyboardDispatcher::dispatchKeyboardMSG(key, down IF_2_2(, repeat));
 
 		const bool shouldEatInput = ImGui::GetIO().WantCaptureKeyboard || shouldBlockInput();
 		if (shouldEatInput || !down) {
@@ -103,7 +110,7 @@ class $modify(CCKeyboardDispatcher) {
 		if (shouldEatInput) {
 			return false;
 		} else {
-			return CCKeyboardDispatcher::dispatchKeyboardMSG(key, down, idk);
+			return CCKeyboardDispatcher::dispatchKeyboardMSG(key, down IF_2_2(, repeat));
 		}
 	}
 };
