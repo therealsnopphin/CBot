@@ -2,6 +2,7 @@
 #include <imgui.h>
 #include <imgui-cocos.hpp>
 #include <utility>
+#include <type_traits>
 
 #ifdef GEODE_IS_WINDOWS
 	// so msvc shuts up
@@ -67,6 +68,28 @@ bool ImGuiCocos::isInitialized() const {
 	return m_initialized;
 }
 
+// little helper function to convert ImTexture2D <=> GLuint,
+// supporting both versions of imgui where this was a void* and is now a u64
+// (templated because c++ is stupid)
+
+template <class T = ImTextureID>
+static GLuint toGLTexture(std::type_identity_t<T> tex) {
+	if constexpr (std::is_same_v<T, void*>) {
+		return static_cast<GLuint>(reinterpret_cast<std::uintptr_t>(tex));
+	} else {
+		return static_cast<GLuint>(tex);
+	}
+}
+template <class T = ImTextureID>
+static T fromGLTexture(GLuint tex) {
+	if constexpr (std::is_same_v<T, void*>) {
+		return reinterpret_cast<T>(tex);
+	} else {
+		return static_cast<T>(tex);
+	}
+}
+
+
 ImGuiCocos& ImGuiCocos::setup() {
 	if (m_initialized) return *this;
 
@@ -119,7 +142,7 @@ ImGuiCocos& ImGuiCocos::setup() {
 	m_fontTexture = new CCTexture2D;
 	m_fontTexture->initWithData(pixels, kCCTexture2DPixelFormat_RGBA8888, width, height, CCSize(static_cast<float>(width), static_cast<float>(height)));
 
-	io.Fonts->SetTexID(reinterpret_cast<ImTextureID>(static_cast<std::uintptr_t>(m_fontTexture->getName())));
+	io.Fonts->SetTexID(fromGLTexture(m_fontTexture->getName()));
 
 	return *this;
 }
@@ -247,7 +270,7 @@ void ImGuiCocos::legacyRenderFrame() {
 		auto* idxBuffer = list->IdxBuffer.Data;
 		auto* vtxBuffer = list->VtxBuffer.Data;
 		for (auto& cmd : list->CmdBuffer) {
-			ccGLBindTexture2D(static_cast<GLuint>(std::bit_cast<intptr_t>(cmd.GetTexID())));
+			ccGLBindTexture2D(toGLTexture(cmd.GetTexID()));
 
 			const auto rect = cmd.ClipRect;
 			const auto orig = frameToCocos(ImVec2(rect.x, rect.y));
@@ -346,8 +369,7 @@ void ImGuiCocos::renderFrame() const {
 				continue;
 			}
 
-			const auto textureID = reinterpret_cast<std::uintptr_t>(cmd.GetTexID());
-			ccGLBindTexture2D(static_cast<GLuint>(textureID));
+			ccGLBindTexture2D(toGLTexture(cmd.GetTexID()));
 
 			const auto rect = cmd.ClipRect;
 			const auto orig = frameToCocos(ImVec2(rect.x, rect.y));
