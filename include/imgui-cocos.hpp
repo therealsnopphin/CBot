@@ -25,9 +25,9 @@ private:
 
 	ImGuiCocos();
 
-	static void newFrame();
+	void newFrame();
 	void renderFrame() const;
-	static void legacyRenderFrame(); // uses OpenGL 2.0 for rendering, for compatibility with older devices
+	void legacyRenderFrame() const; // uses OpenGL 2.0 for rendering, for compatibility with older devices
 public:
 	ImGuiCocos(const ImGuiCocos&) = delete;
 	ImGuiCocos(ImGuiCocos&&) = delete;

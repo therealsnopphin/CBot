@@ -11,6 +11,27 @@
 
 using namespace geode::prelude;
 
+// little helper function to convert ImTexture2D <=> GLuint,
+// supporting both versions of imgui where this was a void* and is now a u64
+// (templated because c++ is stupid)
+
+template <class T = ImTextureID>
+static GLuint toGLTexture(std::type_identity_t<T> tex) {
+	if constexpr (std::is_same_v<T, void*>) {
+		return static_cast<GLuint>(reinterpret_cast<std::uintptr_t>(tex));
+	} else {
+		return static_cast<GLuint>(tex);
+	}
+}
+template <class T = ImTextureID>
+static T fromGLTexture(GLuint tex) {
+	if constexpr (std::is_same_v<T, void*>) {
+		return reinterpret_cast<T>(tex);
+	} else {
+		return static_cast<T>(tex);
+	}
+}
+
 ImGuiCocos& ImGuiCocos::get() {
 	static ImGuiCocos inst;
 	return inst;
@@ -67,28 +88,6 @@ bool ImGuiCocos::getForceLegacy() const {
 bool ImGuiCocos::isInitialized() const {
 	return m_initialized;
 }
-
-// little helper function to convert ImTexture2D <=> GLuint,
-// supporting both versions of imgui where this was a void* and is now a u64
-// (templated because c++ is stupid)
-
-template <class T = ImTextureID>
-static GLuint toGLTexture(std::type_identity_t<T> tex) {
-	if constexpr (std::is_same_v<T, void*>) {
-		return static_cast<GLuint>(reinterpret_cast<std::uintptr_t>(tex));
-	} else {
-		return static_cast<GLuint>(tex);
-	}
-}
-template <class T = ImTextureID>
-static T fromGLTexture(GLuint tex) {
-	if constexpr (std::is_same_v<T, void*>) {
-		return reinterpret_cast<T>(tex);
-	} else {
-		return static_cast<T>(tex);
-	}
-}
-
 
 ImGuiCocos& ImGuiCocos::setup() {
 	if (m_initialized) return *this;
@@ -236,12 +235,12 @@ void ImGuiCocos::newFrame() {
 	io.KeyShift = kb->getShiftKeyPressed();
 }
 
-static bool hasExtension(const std::string& ext) {
+static bool hasExtension(const std::string_view ext) {
 	static auto exts = reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS));
 	if (exts == nullptr)
 		return false;
 
-	return std::string(exts).find(ext) != std::string::npos;
+	return std::string_view(exts).find(ext) != std::string::npos;
 }
 
 static void drawTriangle(const std::array<CCPoint, 3>& poly, const std::array<ccColor4F, 3>& colors, const std::array<CCPoint, 3>& uvs) {
@@ -260,7 +259,7 @@ static void drawTriangle(const std::array<CCPoint, 3>& poly, const std::array<cc
 	glDrawArrays(GL_TRIANGLE_FAN, 0, 3);
 }
 
-void ImGuiCocos::legacyRenderFrame() {
+void ImGuiCocos::legacyRenderFrame() const {
 	glEnable(GL_SCISSOR_TEST);
 
 	auto* drawData = ImGui::GetDrawData();
