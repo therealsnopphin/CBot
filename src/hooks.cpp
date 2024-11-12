@@ -34,7 +34,7 @@ class $modify(CCMouseDispatcher) {
 #endif
 
 #if GEODE_COMP_GD_VERSION >= 22070
-	#define IF_2_207(...) __VA_AGS__
+	#define IF_2_207(...) __VA_ARGS__
 #else
 	#define IF_2_207(...)
 #endif
