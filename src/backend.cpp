@@ -194,6 +194,7 @@ ImGuiCocos& ImGuiCocos::setup() {
 void ImGuiCocos::destroy() {
 	if (!m_initialized) return;
 
+	ImGui::GetIO().BackendPlatformUserData = nullptr;
 	ImGui::DestroyContext();
 	delete m_fontTexture;
 	m_initialized = false;
