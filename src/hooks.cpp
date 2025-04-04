@@ -152,7 +152,17 @@ class $modify(CCTouchDispatcher) {
 	}
 };
 
-#ifndef GEODE_IS_ANDROID
+// need imgui to be drawn inbetween glClear and swapBuffers:
+// drawScene() {
+//   glClear();
+//   draw current scene();
+//   <- here!
+//   swapBuffers();
+// }
+// swapBuffers on android and macos doesnt do anything, so hooking it might not work,
+// and because it doesnt do anything just drawing imgui at the end of drawScene works fine
+
+#if defined(GEODE_IS_WINDOWS) || defined(GEODE_IS_IOS)
 
 #include <Geode/modify/CCEGLView.hpp>
 
@@ -164,7 +174,7 @@ class $modify(CCEGLView) {
 		CCEGLView::swapBuffers();
 	}
 
-	#ifdef GEODE_IS_WINDOWS
+#ifdef GEODE_IS_WINDOWS
 	void toggleFullScreen(bool value IF_2_2(, bool borderless) IF_2_207(, bool fix)) {
 		if (!ImGuiCocos::get().isInitialized())
 			return CCEGLView::toggleFullScreen(value IF_2_2(, borderless) IF_2_207(, fix));
@@ -173,7 +183,7 @@ class $modify(CCEGLView) {
 		CCEGLView::toggleFullScreen(value IF_2_2(, borderless) IF_2_207(, fix));
 		ImGuiCocos::get().setup();
 	}
-	#endif
+#endif
 };
 
 #else
