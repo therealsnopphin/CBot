@@ -9,6 +9,7 @@ $on_mod(Loaded) {
 	});
 }
 
+#ifndef GEODE_IS_IOS
 #include <Geode/modify/CCKeyboardDispatcher.hpp>
 class $modify(ImGuiKeybindHook, cocos2d::CCKeyboardDispatcher) {
 	bool dispatchKeyboardMSG(cocos2d::enumKeyCodes key, bool isKeyDown, bool isKeyRepeat) {
@@ -18,3 +19,4 @@ class $modify(ImGuiKeybindHook, cocos2d::CCKeyboardDispatcher) {
 		return CCKeyboardDispatcher::dispatchKeyboardMSG(key, isKeyDown, isKeyRepeat);
 	}
 };
+#endif
