@@ -97,8 +97,8 @@ void ImGuiCocos::toggle() {
 
 void ImGuiCocos::setVisible(bool v) {
 	m_visible = v;
+	auto& io = ImGui::GetIO();
 	if (!m_visible) {
-		auto& io = ImGui::GetIO();
 		io.WantCaptureKeyboard = false;
 		io.WantCaptureMouse = false;
 		io.WantTextInput = false;
@@ -108,6 +108,7 @@ void ImGuiCocos::setVisible(bool v) {
 		m_lastCursor = ImGuiMouseCursor_COUNT;
 #endif
 	}
+	io.SetAppAcceptingEvents(m_visible);
 }
 
 bool ImGuiCocos::isVisible() const {
