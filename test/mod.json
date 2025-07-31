@@ -8,7 +8,9 @@
 	},
 	"id": "snopphin.cbot",
 	"name": "CBot",
-	"version": "3.3.0",
+	"version": "3.4.0",
 	"developer": "Snopphin",
-	"description": "This is geometry dash clickbot. Check for KeyCodes.txt in the geometry dash folder."
+	"description": "This is geometry dash clickbot. Check for KeyCodes.txt in the geometry dash folder.",
+
+	"links": { "src": "https://github.com/therealsnopphin/CBot", "discord": "https://discord.gg/N2bxXBsqEJ" }
 }
