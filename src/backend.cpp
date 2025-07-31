@@ -431,7 +431,7 @@ void ImGuiCocos::renderFrame() const {
 
 			if (end.x <= orig.x || end.y >= orig.y)
 				continue;
-
+			
 			CCDirector::sharedDirector()->getOpenGLView()->setScissorInPoints(orig.x, end.y, end.x - orig.x, orig.y - end.y);
 
 			if (hasVtxOffset) {

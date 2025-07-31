@@ -1,14 +1,14 @@
 {
-	"geode": "4.3.1",
+	"geode": "4.7.0",
 	"gd": {
 		"win": "2.2074",
 		"android": "2.2074",
 		"mac": "2.2074",
 		"ios": "2.2074"
 	},
-	"id": "mat.test-imgui",
-	"name": "test-imgui",
-	"version": "1.0.0",
-	"developer": "mat",
-	"description": "t"
+	"id": "snopphin.cbot",
+	"name": "CBot",
+	"version": "3.3.0",
+	"developer": "Snopphin",
+	"description": "This is geometry dash clickbot. Check for KeyCodes.txt in the geometry dash folder."
 }
