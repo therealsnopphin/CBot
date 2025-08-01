@@ -2,6 +2,7 @@
 
 inline void loadMenukeyConfig(const std::string& configPath)
 {
+    std::println("Loading gd folder/save.json, its CBot key config autosave, if you have any crashes with this, delete save.json from your Geometry Dash Folder");
 	std::ifstream configFile(configPath);
 
 	nlohmann::json j;
@@ -26,6 +27,7 @@ inline void saveMenukeyConfig(const std::string& configPath)
 
 inline void writeTutorialKeys()
 {
+    std::println("Writing keys tutorial for Key Input, located at gd folder/KeyCodes.txt");
     std::ofstream outFile("KeyCodes.txt");
 
     outFile <<

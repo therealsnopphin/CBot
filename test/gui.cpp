@@ -188,6 +188,15 @@ namespace gui
 		m_player1_whitenoise = m_player1_whitenoiseclickpack;
 		m_player1_hardclicks = m_player1_hardclicksclickpack;
 		m_player1_softclicks = m_player1_softclicksclickpack;
+
+		auto config = geode::Mod::get();
+
+		config->setSettingValue("Player 1 SoftClicks", m_player1_softclicks);
+		config->setSettingValue("Player 1 HardClicks", m_player1_hardclicks);
+		config->setSettingValue("Player 1 WhiteNoise", m_player1_whitenoise);
+		config->setSettingValue("Player 2 SoftClicks", m_player2_softclicks);
+		config->setSettingValue("Player 2 HardClicks", m_player2_hardclicks);
+		config->setSettingValue("Player 2 WhiteNoise", m_player2_whitenoise);
 	}
 	void loadClickpacks(std::vector<std::string>& vectorclickpacks)
 	{
@@ -228,10 +237,15 @@ namespace gui
 		{
 			if (m_updatefound == false)
 			{
+				auto config = geode::Mod::get();
+
 				ImGui::Begin(m_Title.c_str());
 			
 				//Config button
-				ImGui::InputInt("Menu Key", &m_selectedKey);
+				if (ImGui::InputInt("Menu Key", &m_selectedKey))
+				{
+					config->setSettingValue("Menu key", m_selectedKey);
+				}
 
 				//Clickpack
 				{
@@ -250,8 +264,14 @@ namespace gui
 					for (const auto& folder : clickpackfolders)
 						clickpack_cstrs.push_back(folder.c_str());
 
-					ImGui::Combo("Select player1 clickpack", &s_selected_player1_clickpack_index, clickpack_cstrs.data(), clickpack_cstrs.size());
-					ImGui::Combo("Select player2 clickpack", &s_selected_player2_clickpack_index, clickpack_cstrs.data(), clickpack_cstrs.size());
+					if (ImGui::Combo("Select player1 clickpack", &s_selected_player1_clickpack_index, clickpack_cstrs.data(), clickpack_cstrs.size()))
+					{
+						config->setSettingValue("Player 1 ClickpackPath", clickpackfolders[s_selected_player1_clickpack_index]);
+					}
+					if (ImGui::Combo("Select player2 clickpack", &s_selected_player2_clickpack_index, clickpack_cstrs.data(), clickpack_cstrs.size()))
+					{
+						config->setSettingValue("Player 2 ClickpackPath", clickpackfolders[s_selected_player2_clickpack_index]);
+					}
 					m_player1_clickpack_path = clickpackfolders[s_selected_player1_clickpack_index];
 					m_player2_clickpack_path = clickpackfolders[s_selected_player2_clickpack_index];
 
@@ -300,31 +320,93 @@ namespace gui
 				}
 
 				//Settings
-				ImGui::Checkbox("Enable Player1 Softclicks", &m_player1_softclicks);
-				ImGui::Checkbox("Enable Player1 Hardclicks", &m_player1_hardclicks);
-				ImGui::Checkbox("Enable Player1 WhiteNoise", &m_player1_whitenoise);
+				if (ImGui::Checkbox("Enable Player1 Softclicks", &m_player1_softclicks))
+				{
+					if (m_player1_softclicksclickpack)
+					config->setSettingValue("Player 1 SoftClicks", m_player1_softclicks);
+				}
+				if (ImGui::Checkbox("Enable Player1 Hardclicks", &m_player1_hardclicks))
+				{
+					if (m_player1_hardclicksclickpack)
+					config->setSettingValue("Player 1 HardClicks", m_player1_hardclicks);
+				}
+
+				if (ImGui::Checkbox("Enable Player1 WhiteNoise", &m_player1_whitenoise))
+				{
+					if (m_player1_whitenoiseclickpack)
+					config->setSettingValue("Player 1 Whitenoise", m_player1_whitenoise);
+				}
 
 				//Settings
-				ImGui::Checkbox("Enable Player2 Softclicks", &m_player2_softclicks);
-				ImGui::Checkbox("Enable Player2 Hardclicks", &m_player2_hardclicks);
-				ImGui::Checkbox("Enable Player2 WhiteNoise", &m_player2_whitenoise);
+				if (ImGui::Checkbox("Enable Player2 Softclicks", &m_player2_softclicks))
+				{
+					if (m_player2_softclicksclickpack)
+						config->setSettingValue("Player 2 SoftClicks", m_player2_softclicks);
+				}
+				if (ImGui::Checkbox("Enable Player2 Hardclicks", &m_player2_hardclicks))
+				{
+					if (m_player2_hardclicksclickpack)
+						config->setSettingValue("Player 2 HardClicks", m_player2_hardclicks);
+				}
 
-				ImGui::InputFloat("PC Noise volume", &m_whitenoisevolume);
-				ImGui::InputFloat("Min Pitch", &m_minPitch);
-				ImGui::InputFloat("Max Pitch", &m_maxPitch);
-				ImGui::InputFloat("Max Volume", &m_maxVolume);
-				ImGui::InputFloat("Min Volume", &m_minVolume);
-				ImGui::InputFloat("Min softclicks_time", &m_minsoftClickstime);
-				ImGui::InputFloat("Max softclicks_time", &m_maxsoftClickstime);
-				ImGui::InputFloat("Min hardclicks_time", &m_minhardClickstime);
-				ImGui::InputFloat("Max hardclicks_time", &m_maxhardClickstime);
-				ImGui::Checkbox("Random Panning", &m_randomPanning);
+				if (ImGui::Checkbox("Enable Player2 WhiteNoise", &m_player2_whitenoise))
+				{
+					if (m_player2_whitenoiseclickpack)
+						config->setSettingValue("Player 2 Whitenoise", m_player2_whitenoise);
+				}
+
+				if (ImGui::InputFloat("PC Noise volume", &m_whitenoisevolume))
+				{
+					config->setSettingValue("PC Noise Volume", m_whitenoisevolume);
+				}
+
+				if (ImGui::InputFloat("Min Click Pitch", &m_minPitch))
+				{
+					config->setSettingValue("Min Click Pitch", m_minPitch);
+				}
+				if (ImGui::InputFloat("Max Click Pitch", &m_maxPitch)) 
+				{
+					config->setSettingValue("Max Click Pitch", m_maxPitch);
+				}
+				if (ImGui::InputFloat("Min Click Volume", &m_minVolume))
+				{
+					config->setSettingValue("Min Click Volume", m_minVolume);
+				}
+				if (ImGui::InputFloat("Max Click Volume", &m_maxVolume))
+				{
+					config->setSettingValue("Max Click Volume", m_maxVolume);
+				}
+				if (ImGui::InputFloat("Min softclicks_time", &m_minsoftClickstime)) 
+				{
+					config->setSettingValue("Min softclicks_time", m_minsoftClickstime);
+				}
+				if (ImGui::InputFloat("Max softclicks_time", &m_maxsoftClickstime)) 
+				{
+					config->setSettingValue("Max softclicks_time", m_maxsoftClickstime);
+				}
+				if (ImGui::InputFloat("Min hardclicks_time", &m_minhardClickstime)) 
+				{
+					config->setSettingValue("Min hardclicks_time", m_minhardClickstime);
+				}
+				if (ImGui::InputFloat("Max hardclicks_time", &m_maxhardClickstime))
+				{
+					config->setSettingValue("Max hardclicks_time", m_maxhardClickstime);
+				}
+
+
+				if (ImGui::Checkbox("Random Panning", &m_randomPanning))
+				{
+					config->setSettingValue("Random panning", m_randomPanning);
+				}
 
 				ImGui::End();
 
 				ImGui::Begin("Reverb");
 				ImGui::Text("Select Reverb Type");
-				ImGui::Combo("Reverb type: ", &m_currentreverbtype, m_dsps.data(), m_dsps.size());
+				if (ImGui::Combo("Reverb type: ", &m_currentreverbtype, m_dsps.data(), m_dsps.size()))
+				{
+					config->setSettingValue("Reverb Effect", m_currentreverbtype);
+				}
 
 				switch (m_currentreverbtype)
 				{
@@ -439,6 +521,68 @@ namespace gui
 			}
 		}
 	}
+	void GeodeGuiInitalize()
+	{
+		auto config = geode::Mod::get();
+
+		config->setSettingValue("Menu key", m_selectedKey);
+
+		config->setSettingValue("Player 1 ClickpackPath", m_player1_clickpack_path);
+		config->setSettingValue("Player 2 ClickpackPath", m_player2_clickpack_path);
+
+		config->setSettingValue("Player 1 SoftClicks", m_player1_softclicks);
+		config->setSettingValue("Player 1 HardClicks", m_player1_hardclicks);
+		config->setSettingValue("Player 1 WhiteNoise", m_player1_whitenoise);
+		config->setSettingValue("Player 2 SoftClicks", m_player2_softclicks);
+		config->setSettingValue("Player 2 HardClicks", m_player2_hardclicks);
+		config->setSettingValue("Player 2 WhiteNoise", m_player2_whitenoise);
+
+		config->setSettingValue("PC Noise Volume", m_whitenoisevolume);
+		config->setSettingValue("Min Click Pitch", m_minPitch);
+		config->setSettingValue("Max Click Pitch", m_maxPitch);
+		config->setSettingValue("Min Click Volume", m_minVolume);
+		config->setSettingValue("Max Click Volume", m_maxVolume);
+
+		config->setSettingValue("Min softclicks_time", m_minsoftClickstime);
+		config->setSettingValue("Max softclicks_time", m_maxsoftClickstime);
+		config->setSettingValue("Min hardclicks_time", m_minhardClickstime);
+		config->setSettingValue("Max hardclicks_time", m_maxhardClickstime);
+
+		config->setSettingValue("Reverb effect", m_currentreverbtype);
+
+		config->setSettingValue("Random panning", m_randomPanning);
+	}
+
+	void GeodeRender()
+	{
+		auto config = geode::Mod::get();
+
+		m_selectedKey = config->getSettingValue<int>("Menu key");
+
+		m_player1_clickpack_path = config->getSettingValue<std::string>("Player 1 ClickpackPath");
+		m_player2_clickpack_path = config->getSettingValue<std::string>("Player 2 ClickpackPath");
+
+		m_player1_softclicks = config->getSettingValue<bool>("Player 1 SoftClicks");
+		m_player1_hardclicks = config->getSettingValue<bool>("Player 1 HardClicks");
+		m_player1_whitenoise = config->getSettingValue<bool>("Player 1 WhiteNoise");
+		m_player2_softclicks = config->getSettingValue<bool>("Player 2 SoftClicks");
+		m_player2_hardclicks = config->getSettingValue<bool>("Player 2 HardClicks");
+		m_player2_whitenoise = config->getSettingValue<bool>("Player 2 WhiteNoise");
+
+		m_whitenoisevolume = config->getSettingValue<float>("PC Noise Volume");
+		m_minPitch = config->getSettingValue<float>("Min Click Pitch");
+		m_maxPitch = config->getSettingValue<float>("Max Click Pitch");
+		m_minVolume = config->getSettingValue<float>("Min Click Volume");
+		m_maxVolume = config->getSettingValue<float>("Max Click Volume");
+
+		m_minsoftClickstime = config->getSettingValue<float>("Min softclicks_time");
+		m_maxsoftClickstime = config->getSettingValue<float>("Max softclicks_time");
+		m_minhardClickstime = config->getSettingValue<float>("Min hardclicks_time");
+		m_maxhardClickstime = config->getSettingValue<float>("Max hardclicks_time");
+
+		m_currentreverbtype = config->getSettingValue<int>("Reverb effect");
+		m_randomPanning = config->getSettingValue<bool>("Random panning");
+	}
 	$on_mod(Loaded) {
 		ImGuiCocos::get().setup([] {
 			writeTutorialKeys();
@@ -450,16 +594,15 @@ namespace gui
 			{
 				loadMenukeyConfig("save.json");
 			}
-
 			initializeImGui();
 			// this runs after imgui has been setup,
 			// its a callback as imgui will be re initialized when toggling fullscreen,
 			// so use this to setup any themes and or fonts!
 			}).draw([] {
+				GeodeRender(); // I mean i need call it every frame, why not here
 				renderImGui();
 				});
 	}
-
 	
 	class $modify(ImGuiKeybindHook, cocos2d::CCKeyboardDispatcher) {
 		bool dispatchKeyboardMSG(cocos2d::enumKeyCodes key, bool isKeyDown, bool isKeyRepeat) {
