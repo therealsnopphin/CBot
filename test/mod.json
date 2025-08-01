@@ -8,7 +8,7 @@
 	},
 	"id": "snopphin.cbot",
 	"name": "CBot",
-	"version": "3.5.3",
+	"version": "3.6.0",
 	"developer": "Snopphin",
 	"description": "This is geometry dash clickbot and Check for KeyCodes.txt in the geometry dash folder",
  "settings": {
