@@ -18,7 +18,7 @@
 #include <Geode/modify/GJBaseGameLayer.hpp>
 #include <Geode/modify/PlayerObject.hpp>
 #include <Geode/modify/CCKeyboardDispatcher.hpp>
-#include <iostream>
+#include <print>
 #include "json.hpp"
 #include "random.h"
 #include <urlmon.h>

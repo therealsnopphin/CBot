@@ -158,8 +158,8 @@ namespace gui
 		std::string whiteplayer1noiseaudiopath = gui::m_player1_clickpack_path + "\\whitenoise.wav";
 		if (std::filesystem::exists(whiteplayer1noiseaudiopath))
 		{
-			std::cout << FMOD_ErrorString(CBot::fmodengine::system->createSound(whiteplayer1noiseaudiopath.c_str(), FMOD_LOOP_NORMAL | FMOD_DEFAULT, nullptr, &m_whiteplayer1noisesound)) << std::endl;
-			std::cout << FMOD_ErrorString(CBot::fmodengine::system->playSound(m_whiteplayer1noisesound, nullptr, false, &m_whiteplayer1noisechannel)) << std::endl;
+			std::println("Creating sound named {0}, result = {1}", whiteplayer1noiseaudiopath, FMOD_ErrorString(CBot::fmodengine::system->createSound(whiteplayer1noiseaudiopath.c_str(), FMOD_LOOP_NORMAL | FMOD_DEFAULT, nullptr, &m_whiteplayer1noisesound)));
+			std::println("Playing sound named {0}, result is = {1}", whiteplayer1noiseaudiopath, FMOD_ErrorString(CBot::fmodengine::system->playSound(m_whiteplayer1noisesound, nullptr, false, &m_whiteplayer1noisechannel)));
 		}
 		else
 		{
@@ -171,8 +171,8 @@ namespace gui
 		std::string whiteplayer2noiseaudiopath = gui::m_player2_clickpack_path + "\\whitenoise.wav";
 		if (std::filesystem::exists(whiteplayer2noiseaudiopath))
 		{
-			std::cout << FMOD_ErrorString(CBot::fmodengine::system->createSound(whiteplayer2noiseaudiopath.c_str(), FMOD_LOOP_NORMAL | FMOD_DEFAULT, nullptr, &m_whiteplayer2noisesound)) << std::endl;
-			std::cout << FMOD_ErrorString(CBot::fmodengine::system->playSound(m_whiteplayer2noisesound, nullptr, false, &m_whiteplayer2noisechannel)) << std::endl;
+			std::println("Creating sound named {0}, result = {1}", whiteplayer2noiseaudiopath, FMOD_ErrorString(CBot::fmodengine::system->createSound(whiteplayer2noiseaudiopath.c_str(), FMOD_LOOP_NORMAL | FMOD_DEFAULT, nullptr, &m_whiteplayer2noisesound)));
+			std::println("Playing sound named {0}, result is = {1}", whiteplayer2noiseaudiopath, FMOD_ErrorString(CBot::fmodengine::system->playSound(m_whiteplayer2noisesound, nullptr, false, &m_whiteplayer2noisechannel)));
 		}
 		else
 		{

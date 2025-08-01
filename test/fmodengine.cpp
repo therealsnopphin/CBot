@@ -2,21 +2,29 @@
 
 void CBot::fmodengine::init()
 {   
-	std::cout << FMOD_ErrorString(FMOD::System_Create(&fmodengine::system)) << std::endl;
-	std::cout << FMOD_ErrorString(fmodengine::system->setSoftwareChannels(64)) << std::endl;
-	std::cout << FMOD_ErrorString(fmodengine::system->init(4093, FMOD_INIT_NORMAL, nullptr)) << std::endl;
+	std::println("Creating fmod system for CBot result = {0}", FMOD_ErrorString(FMOD::System_Create(&fmodengine::system)));
+	std::println("Creating fmod.setSoftwareChannels for CBot result = {0}", FMOD_ErrorString(fmodengine::system->setSoftwareChannels(64)));
+	std::println("Initalizig fmod system for CBot result = {0}", FMOD_ErrorString(fmodengine::system->init(4093, FMOD_INIT_NORMAL, nullptr)));
 }
 
 void CBot::fmodengine::createSound(std::string file)
 {
- 	std::cout << FMOD_ErrorString(fmodengine::system->createSound(file.c_str(), FMOD_DEFAULT, nullptr, &fmodengine::sound)) << "\n";
+	std::println("Creating sound named {0}, result = {1}", file, FMOD_ErrorString(fmodengine::system->createSound(file.c_str(), FMOD_DEFAULT, nullptr, &fmodengine::sound)));
+
 	sounds[file] = sound;
 }
 
 void CBot::fmodengine::playSound(std::string file, float Pitch, float Volume)
 {
 	FMOD::Channel* currentchannel = nullptr;
-	fmodengine::system->playSound(sounds[file], nullptr, false, &currentchannel);
+	FMOD_RESULT result_sound = fmodengine::system->playSound(sounds[file], nullptr, false, &currentchannel);
+
+	if (result_sound != FMOD_RESULT::FMOD_OK)
+	{
+		std::println("Error while playing sound named {0}, result = {1}", file, FMOD_ErrorString(result_sound));
+		return;
+	}
+
 	currentchannel->setVolume(Volume);
 	currentchannel->setPitch(Pitch);
 	if (gui::m_randomPanning)
