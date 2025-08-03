@@ -19,7 +19,6 @@ namespace gui
 {
 	void initializeImGui();
 	void renderImGui();
-	void GeodeGuiInitalize();
 	void GeodeRender();
 
 	inline std::unordered_map<ClickAudioType, ClickAudio> m_Player1ClickAudios;
@@ -37,8 +36,8 @@ namespace gui
 	inline FMOD::Channel* m_whiteplayer2noisechannel = nullptr;
 	inline FMOD::Sound* m_whiteplayer2noisesound = nullptr;
 
-	inline std::string m_player1_clickpack_path = "";
-	inline std::string m_player2_clickpack_path = "";
+	inline std::string m_player1_clickpack_path = "None";
+	inline std::string m_player2_clickpack_path = "None";
 	//player1
 	inline bool m_player1_softclicks = false;
 	inline bool m_player1_hardclicks = false;

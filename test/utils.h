@@ -7,7 +7,7 @@ inline void enableconsole()
 
     freopen("CONOUT$", "w", stdout);
     freopen("CONOUT$", "w", stderr);
-    freopen("CONIN$", "r", stdin);
+    freopen("CONIN$", "r", stdin); 
 }
 
 struct XorShift128Plus {

@@ -154,12 +154,32 @@ namespace gui
 			}
 
 		}
-
-		std::string whiteplayer1noiseaudiopath = gui::m_player1_clickpack_path + "\\whitenoise.wav";
-		if (std::filesystem::exists(whiteplayer1noiseaudiopath))
+		if (std::filesystem::exists(gui::m_player1_clickpack_path))
 		{
-			std::println("Creating sound named {0}, result = {1}", whiteplayer1noiseaudiopath, FMOD_ErrorString(CBot::fmodengine::system->createSound(whiteplayer1noiseaudiopath.c_str(), FMOD_LOOP_NORMAL | FMOD_DEFAULT, nullptr, &m_whiteplayer1noisesound)));
-			std::println("Playing sound named {0}, result is = {1}", whiteplayer1noiseaudiopath, FMOD_ErrorString(CBot::fmodengine::system->playSound(m_whiteplayer1noisesound, nullptr, false, &m_whiteplayer1noisechannel)));
+			bool isWhiteNoiseFound = false;
+			for (auto& entry : std::filesystem::directory_iterator(gui::m_player1_clickpack_path))
+			{
+				if (entry.is_regular_file())
+				{
+					std::string strfile = entry.path().string();
+
+
+					isWhiteNoiseFound = strfile.contains("whitenoise") || strfile.contains("noise");
+
+					if (isWhiteNoiseFound)
+					{
+						std::println("Creating sound named {0}, result = {1}", strfile, FMOD_ErrorString(CBot::fmodengine::system->createSound(strfile.c_str(), FMOD_LOOP_NORMAL | FMOD_DEFAULT, nullptr, &m_whiteplayer1noisesound)));
+						std::println("Playing sound named {0}, result is = {1}", strfile, FMOD_ErrorString(CBot::fmodengine::system->playSound(m_whiteplayer1noisesound, nullptr, false, &m_whiteplayer1noisechannel)));
+						break;
+					}
+				}
+			}
+			if (isWhiteNoiseFound == false)
+			{
+				m_player1_whitenoiseclickpack = false;
+
+				m_whiteplayer1noisechannel->stop();
+			}
 		}
 		else
 		{
@@ -168,11 +188,32 @@ namespace gui
 			m_whiteplayer1noisechannel->stop();
 		}
 
-		std::string whiteplayer2noiseaudiopath = gui::m_player2_clickpack_path + "\\whitenoise.wav";
-		if (std::filesystem::exists(whiteplayer2noiseaudiopath))
+		if (std::filesystem::exists(gui::m_player2_clickpack_path))
 		{
-			std::println("Creating sound named {0}, result = {1}", whiteplayer2noiseaudiopath, FMOD_ErrorString(CBot::fmodengine::system->createSound(whiteplayer2noiseaudiopath.c_str(), FMOD_LOOP_NORMAL | FMOD_DEFAULT, nullptr, &m_whiteplayer2noisesound)));
-			std::println("Playing sound named {0}, result is = {1}", whiteplayer2noiseaudiopath, FMOD_ErrorString(CBot::fmodengine::system->playSound(m_whiteplayer2noisesound, nullptr, false, &m_whiteplayer2noisechannel)));
+			bool isWhiteNoiseFound = false;
+			for (auto& entry : std::filesystem::directory_iterator(gui::m_player2_clickpack_path))
+			{
+				if (entry.is_regular_file())
+				{
+					std::string strfile = entry.path().string();
+
+
+					isWhiteNoiseFound = strfile.contains("whitenoise") || strfile.contains("noise");
+
+					if (isWhiteNoiseFound)
+					{
+						std::println("Creating sound named {0}, result = {1}", strfile, FMOD_ErrorString(CBot::fmodengine::system->createSound(strfile.c_str(), FMOD_LOOP_NORMAL | FMOD_DEFAULT, nullptr, &m_whiteplayer1noisesound)));
+						std::println("Playing sound named {0}, result is = {1}", strfile, FMOD_ErrorString(CBot::fmodengine::system->playSound(m_whiteplayer1noisesound, nullptr, false, &m_whiteplayer1noisechannel)));
+						break;
+					}
+				}
+			}
+			if (isWhiteNoiseFound == false)
+			{
+				m_player2_whitenoiseclickpack = false;
+
+				m_whiteplayer2noisechannel->stop();
+			}
 		}
 		else
 		{
@@ -209,10 +250,15 @@ namespace gui
 
 	void renderAutoUpdate()
 	{
+		auto config = geode::Mod::get();
+
 		ImGui::Begin("AutoUpdate");
+		config->setSettingValue("Menu key", m_selectedKey);
 		//Config button
-		ImGui::InputInt("Menu Key", &m_selectedKey);
-		saveMenukeyConfig("save.json");
+		if (ImGui::InputInt("Menu Key", &m_selectedKey))
+		{
+			saveMenukeyConfig();
+		}
 
 		ImGui::Text("We currently deceted\nthat new version of CBot has been found\ngo to https://github.com/therealsnopphin/CBot/releases\nto update CBot");
 
@@ -241,10 +287,11 @@ namespace gui
 
 				ImGui::Begin(m_Title.c_str());
 			
+				config->setSettingValue("Menu key", m_selectedKey);
 				//Config button
 				if (ImGui::InputInt("Menu Key", &m_selectedKey))
 				{
-					config->setSettingValue("Menu key", m_selectedKey);
+					saveMenukeyConfig();
 				}
 
 				//Clickpack
@@ -334,7 +381,7 @@ namespace gui
 				if (ImGui::Checkbox("Enable Player1 WhiteNoise", &m_player1_whitenoise))
 				{
 					if (m_player1_whitenoiseclickpack)
-					config->setSettingValue("Player 1 Whitenoise", m_player1_whitenoise);
+					config->setSettingValue("Player 1 WhiteNoise", m_player1_whitenoise);
 				}
 
 				//Settings
@@ -351,8 +398,10 @@ namespace gui
 
 				if (ImGui::Checkbox("Enable Player2 WhiteNoise", &m_player2_whitenoise))
 				{
-					if (m_player2_whitenoiseclickpack)
-						config->setSettingValue("Player 2 Whitenoise", m_player2_whitenoise);
+					if (m_player2_whitenoiseclickpack == true)
+					{
+						config->setSettingValue("Player 2 WhiteNoise", m_player2_whitenoise);
+					}
 				}
 
 				if (ImGui::InputFloat("PC Noise volume", &m_whitenoisevolume))
@@ -512,7 +561,6 @@ namespace gui
 					ImGui::InputFloat("FMOD_DSP_HIGHPASS_SIMPLE_CUTOFF", &m_reverb::FMOD_DSP_HIGHPASS_SIMPLE_CUTOFF);
 					break;
 				}
-				saveMenukeyConfig("save.json");
 				ImGui::End();
 			}
 			else
@@ -520,37 +568,6 @@ namespace gui
 				renderAutoUpdate();
 			}
 		}
-	}
-	void GeodeGuiInitalize()
-	{
-		auto config = geode::Mod::get();
-
-		config->setSettingValue("Menu key", m_selectedKey);
-
-		config->setSettingValue("Player 1 ClickpackPath", m_player1_clickpack_path);
-		config->setSettingValue("Player 2 ClickpackPath", m_player2_clickpack_path);
-
-		config->setSettingValue("Player 1 SoftClicks", m_player1_softclicks);
-		config->setSettingValue("Player 1 HardClicks", m_player1_hardclicks);
-		config->setSettingValue("Player 1 WhiteNoise", m_player1_whitenoise);
-		config->setSettingValue("Player 2 SoftClicks", m_player2_softclicks);
-		config->setSettingValue("Player 2 HardClicks", m_player2_hardclicks);
-		config->setSettingValue("Player 2 WhiteNoise", m_player2_whitenoise);
-
-		config->setSettingValue("PC Noise Volume", m_whitenoisevolume);
-		config->setSettingValue("Min Click Pitch", m_minPitch);
-		config->setSettingValue("Max Click Pitch", m_maxPitch);
-		config->setSettingValue("Min Click Volume", m_minVolume);
-		config->setSettingValue("Max Click Volume", m_maxVolume);
-
-		config->setSettingValue("Min softclicks_time", m_minsoftClickstime);
-		config->setSettingValue("Max softclicks_time", m_maxsoftClickstime);
-		config->setSettingValue("Min hardclicks_time", m_minhardClickstime);
-		config->setSettingValue("Max hardclicks_time", m_maxhardClickstime);
-
-		config->setSettingValue("Reverb effect", m_currentreverbtype);
-
-		config->setSettingValue("Random panning", m_randomPanning);
 	}
 
 	void GeodeRender()
@@ -590,9 +607,9 @@ namespace gui
 			m_updatefound = CBot::autoupdate::CheckForNewUpdate();
 
 			std::filesystem::create_directory(".cbot");
-			if (std::filesystem::exists("save.json"))
+			if (std::filesystem::exists(savefilepath))
 			{
-				loadMenukeyConfig("save.json");
+				loadMenukeyConfig();
 			}
 			initializeImGui();
 			// this runs after imgui has been setup,
@@ -611,6 +628,5 @@ namespace gui
 			}
 			return CCKeyboardDispatcher::dispatchKeyboardMSG(key, isKeyDown, isKeyRepeat);
 		}
-	};
-	
+	};	
 }

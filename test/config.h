@@ -1,29 +1,25 @@
 #pragma once
 
-inline void loadMenukeyConfig(const std::string& configPath)
+
+inline constexpr const char* savefilepath = "save.bin";
+
+inline void loadMenukeyConfig()
 {
-    std::println("Loading gd folder/save.json, its CBot key config autosave, if you have any crashes with this, delete save.json from your Geometry Dash Folder");
-	std::ifstream configFile(configPath);
+    std::ifstream configFile(savefilepath, std::ios::binary);
 
-	nlohmann::json j;
-	configFile >> j;
+    configFile.read((char*)&gui::m_selectedKey, sizeof(gui::m_selectedKey));
 
-
-	if (j.contains("CBot Menu KeyButton") && j["CBot Menu KeyButton"].is_number()) gui::m_selectedKey = j["CBot Menu KeyButton"].get<int>();
-
-	configFile.close();
+    configFile.close();
 }
 
-inline void saveMenukeyConfig(const std::string& configPath)
+inline void saveMenukeyConfig()
 {
-	nlohmann::json j;
-	j["CBot Menu KeyButton"] = gui::m_selectedKey;
+    std::ofstream configFile(savefilepath, std::ios::binary);
+    configFile.write((char*)&gui::m_selectedKey, sizeof(gui::m_selectedKey));
 
-	std::ofstream configFile(configPath);
-	configFile << j.dump(4);
-
-	configFile.close();
+    configFile.close();
 }
+
 
 inline void writeTutorialKeys()
 {

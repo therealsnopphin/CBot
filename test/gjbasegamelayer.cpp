@@ -1,6 +1,6 @@
 #include "pch.h"
 
-class $modify(MyGJBaseGameLayer, GJBaseGameLayer)
+class $modify(GJBaseGameLayer)
 {
 	
 	void handleButton(bool down, int button, bool isPlayer1)

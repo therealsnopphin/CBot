@@ -2,9 +2,8 @@
 
 void CBot::fmodengine::init()
 {   
-	std::println("Creating fmod system for CBot result = {0}", FMOD_ErrorString(FMOD::System_Create(&fmodengine::system)));
-	std::println("Creating fmod.setSoftwareChannels for CBot result = {0}", FMOD_ErrorString(fmodengine::system->setSoftwareChannels(64)));
-	std::println("Initalizig fmod system for CBot result = {0}", FMOD_ErrorString(fmodengine::system->init(4093, FMOD_INIT_NORMAL, nullptr)));
+	std::println("Copying gd's audio fmod system to CBot system");
+	CBot::fmodengine::system = FMODAudioEngine::get()->m_system;
 }
 
 void CBot::fmodengine::createSound(std::string file)
