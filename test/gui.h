@@ -65,7 +65,7 @@ namespace gui
 	inline float m_maxhardClickstime = 2.0f;
 	inline bool m_randomPanning = false;
 
-	inline std::string m_Currentversion = "3.6";
+	inline std::string m_Currentversion = "3.7";
 	inline std::string m_Title = "CBot " + m_Currentversion;
 	inline bool m_updatefound = false;
 
