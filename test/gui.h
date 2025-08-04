@@ -55,7 +55,7 @@ namespace gui
 	inline bool m_player2_whitenoiseclickpack = true;
 
 	inline float m_whitenoisevolume = 1.0f;
-	//If folder soft clicks for example doesn´t exists, then the user cannot change the soft clicks  
+	//If folder soft clicks for example doesnï¿½t exists, then the user cannot change the soft clicks  
 	inline float m_minVolume = 1.0f;
 	inline float m_maxVolume = 1.0f;
 	inline float m_minPitch = 1.0f;
@@ -170,10 +170,10 @@ namespace gui
 		inline float FMOD_DSP_HIGHPASS_SIMPLE_CUTOFF = 500.0f;  // Hz
 
 		// FFT
-		// No effect parameters — for analysis only
+		// No effect parameters ï¿½ for analysis only
 
 		// LOUDNESS_METER
-		// No parameters — analysis only
+		// No parameters ï¿½ analysis only
 
 		// CONVOLUTIONREVERB
 		// Needs impulse response file, no direct parameters here

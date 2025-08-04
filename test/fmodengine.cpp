@@ -29,7 +29,17 @@ void CBot::fmodengine::playSound(std::string file, float Pitch, float Volume)
 	currentchannel->setPitch(Pitch);
 	if (gui::m_randomPanning)
 	{
-		currentchannel->setPan(random::floatRandom(-0.35f, 0.75f));
+		float panValue;
+		float randomValue = random::floatRandom(0.0f, 1.0f);
+		
+		if (randomValue < 0.4f)
+			panValue = random::floatRandom(-0.9f, -0.3f);
+		else if (randomValue < 0.8f)
+			panValue = random::floatRandom(0.3f, 0.9f);
+		else
+			panValue = random::floatRandom(-0.2f, 0.2f);
+			
+		currentchannel->setPan(panValue);
 	}
 
 	if (gui::m_currentreverbtype != (int)FMOD_DSP_TYPE_UNKNOWN)
