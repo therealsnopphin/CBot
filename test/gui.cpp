@@ -210,9 +210,36 @@ namespace gui
 	void renderAutoUpdate()
 	{
 		ImGui::Begin("AutoUpdate");
-		//Config button
-		ImGui::InputInt("Menu Key", &m_selectedKey);
-		saveMenukeyConfig("save.json");
+		static const char* keyNames[] = {
+			"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
+			"N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
+			"0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+			"F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12",
+			"Tab", "Space", "Enter", "Backspace", "Escape", "Left Shift", "Right Shift", "Left Ctrl", "Right Ctrl", "Left Alt", "Right Alt", "Left Arrow", "Right Arrow", "Up Arrow", "Down Arrow"
+		};
+		
+		static const int keyCodes[] = {
+			65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77,
+			78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90,
+			48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
+			112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123,
+			9, 32, 13, 8, 27, 160, 161, 162, 163, 164, 165, 37, 39, 38, 40
+		};
+		
+		static int currentKeyIndex = 16; // Q
+		
+		for (int i = 0; i < IM_ARRAYSIZE(keyCodes); i++) {
+			if (keyCodes[i] == m_selectedKey) {
+				currentKeyIndex = i;
+				break;
+			}
+		}
+		
+		if (ImGui::Combo("Menu Key", &currentKeyIndex, keyNames, IM_ARRAYSIZE(keyNames)))
+		{
+			m_selectedKey = keyCodes[currentKeyIndex];
+			saveMenukeyConfig("save.json");
+		}
 
 		ImGui::Text("We currently deceted\nthat new version of CBot has been found\ngo to https://github.com/therealsnopphin/CBot/releases\nto update CBot");
 
@@ -241,9 +268,36 @@ namespace gui
 
 				ImGui::Begin(m_Title.c_str());
 			
-				//Config button
-				if (ImGui::InputInt("Menu Key", &m_selectedKey))
+				//Config button - Key selection with dropdown
+				static const char* keyNames[] = {
+					"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
+					"N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
+					"0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+					"F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12",
+					"Tab", "Space", "Enter", "Backspace", "Escape", "Left Shift", "Right Shift", "Left Ctrl", "Right Ctrl", "Left Alt", "Right Alt", "Left Arrow", "Right Arrow", "Up Arrow", "Down Arrow"
+				};
+				
+				static const int keyCodes[] = {
+					65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77,
+					78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90,
+					48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
+					112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123,
+					9, 32, 13, 8, 27, 160, 161, 162, 163, 164, 165, 37, 39, 38, 40
+				};
+				
+				static int currentKeyIndex = 16; // Default to 'Q' (key code 81)
+				
+				// Find current key index
+				for (int i = 0; i < IM_ARRAYSIZE(keyCodes); i++) {
+					if (keyCodes[i] == m_selectedKey) {
+						currentKeyIndex = i;
+						break;
+					}
+				}
+				
+				if (ImGui::Combo("Menu Key", &currentKeyIndex, keyNames, IM_ARRAYSIZE(keyNames)))
 				{
+					m_selectedKey = keyCodes[currentKeyIndex];
 					config->setSettingValue("Menu key", m_selectedKey);
 				}
 
