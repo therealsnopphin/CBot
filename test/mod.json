@@ -1,0 +1,234 @@
+{
+	"geode": "4.7.0",
+	"gd": {
+		"win": "2.2074",
+		"android": "2.2074",
+		"mac": "2.2074",
+		"ios": "2.2074"
+	},
+	"id": "snopphin.cbot",
+	"name": "CBot",
+	"version": "3.6.0",
+	"developer": "Snopphin",
+	"description": "This is geometry dash clickbot and Check for KeyCodes.txt in the geometry dash folder",
+ "settings": {
+  "Menu key": {
+    "type": "int",
+    "name": "Menu Key",
+    "description": "The key code that opens the CBot ImGui menu.",
+    "default": 16, 
+    "min": 0,
+    "max": 4356
+  },
+
+  "Player 1 ClickpackPath": {
+    "type": "string",
+    "name": "Player 1 Clickpack Path",
+    "description": "File path to the Player 1 clickpack.",
+    "default": ""
+  },
+  "Player 2 ClickpackPath": {
+    "type": "string",
+    "name": "Player 2 Clickpack Path",
+    "description": "File path to the Player 2 clickpack.",
+    "default": ""
+  },
+
+  "Player 1 SoftClicks": {
+    "type": "bool",
+    "name": "Enable Player 1 SoftClicks",
+    "description": "Toggle soft clicks for Player 1.",
+    "default": false
+  },
+  "Player 1 HardClicks": {
+    "type": "bool",
+    "name": "Enable Player 1 HardClicks",
+    "description": "Toggle hard clicks for Player 1.",
+    "default": false
+  },
+    "Player 1 WhiteNoise": {
+    "type": "bool",
+    "name": "Enable Player 1 WhiteNoise",
+    "description": "Toggle whitenoise for Player 1.",
+    "default": false
+  },
+
+  "Player 2 SoftClicks": {
+    "type": "bool",
+    "name": "Enable Player 2 SoftClicks",
+    "description": "Toggle soft clicks for Player 2.",
+    "default": false
+  },
+  "Player 2 HardClicks": {
+    "type": "bool",
+    "name": "Enable Player 2 HardClicks",
+    "description": "Toggle hard clicks for Player 2.",
+    "default": false
+  },
+    "Player 2 WhiteNoise": {
+    "type": "bool",
+    "name": "Enable Player 2 WhiteNoise",
+    "description": "Toggle whitenoise for Player 2.",
+    "default": false
+  },
+
+  "PC Noise Volume": {
+    "type": "float",
+    "name": "PC Noise Volume",
+    "description": "Configures PC Volume, if enabled.",
+    "default": 1,
+    "min": 0.0,
+    "max": 999,
+    "controls": {
+      "arrows": true,
+      "arrow-step": 0.05,
+      "slider": true,
+      "slider-step": 0.05,
+      "input": false
+    }
+  },
+
+
+  "Min Click Pitch": {
+    "type": "float",
+    "name": "Min Click Pitch",
+    "description": "Lowest pitch value for a click.",
+    "default": 1,
+    "min": 0.0,
+    "max": 999,
+    "controls": {
+      "arrows": true,
+      "arrow-step": 0.05,
+      "slider": true,
+      "slider-step": 0.05,
+      "input": false
+    }
+  },
+  "Max Click Pitch": {
+    "type": "float",
+    "name": "Max Click Pitch",
+    "description": "Highest pitch value for a click.",
+    "default": 1,
+    "min": 0.0,
+    "max": 999,
+    "controls": {
+      "arrows": true,
+      "arrow-step": 0.05,
+      "slider": true,
+      "slider-step": 0.05,
+      "input": false
+    }
+  },
+
+  "Min Click Volume": {
+    "type": "float",
+    "name": "Min Click Volume",
+    "description": "Minimum volume of click sounds.",
+    "default": 1,
+    "min": 0.0,
+    "max": 999,
+    "controls": {
+      "arrows": true,
+      "arrow-step": 0.05,
+      "slider": true,
+      "slider-step": 0.05,
+      "input": false
+    }
+  },
+  "Max Click Volume": {
+    "type": "float",
+    "name": "Max Click Volume",
+    "description": "Maximum volume of click sounds.",
+    "default": 1,
+    "min": 0.0,
+    "max": 999,
+    "controls": {
+      "arrows": true,
+      "arrow-step": 0.05,
+      "slider": true,
+      "slider-step": 0.05,
+      "input": false
+    }
+  },
+
+  "Min softclicks_time": {
+    "type": "float",
+    "name": "Min Softclicks Time",
+    "description": "Minimum delay between soft clicks in seconds.",
+    "default": 0.1,
+    "min": 0.0,
+    "max": 999,
+    "controls": {
+      "arrows": true,
+      "arrow-step": 0.01,
+      "slider": true,
+      "slider-step": 0.01,
+      "input": false
+    }
+  },
+  "Max softclicks_time": {
+    "type": "float",
+    "name": "Max Softclicks Time",
+    "description": "Maximum delay between soft clicks in seconds.",
+    "default": 0.1,
+    "min": 0.0,
+    "max": 999,
+    "controls": {
+      "arrows": true,
+      "arrow-step": 0.01,
+      "slider": true,
+      "slider-step": 0.01,
+      "input": false
+    }
+  },
+
+  "Min hardclicks_time": {
+    "type": "float",
+    "name": "Min Hardclicks Time",
+    "description": "Minimum delay between hard clicks in seconds.",
+    "default": 2,
+    "min": 0.0,
+    "max": 999,
+    "controls": {
+      "arrows": true,
+      "arrow-step": 0.01,
+      "slider": true,
+      "slider-step": 0.01,
+      "input": false
+    }
+  },
+  "Max hardclicks_time": {
+    "type": "float",
+    "name": "Max Hardclicks Time",
+    "description": "Maximum delay between hard clicks in seconds.",
+    "default": 2,
+    "min": 0.0,
+    "max": 999,
+    "controls": {
+      "arrows": true,
+      "arrow-step": 0.01,
+      "slider": true,
+      "slider-step": 0.01,
+      "input": false
+    }
+  },
+
+  "Reverb effect": {
+    "type": "int",
+    "name": "Reverb Effect",
+    "description": "The selected reverb effect for clicks index.",
+    "default": 0,
+    "min": 0,
+    "max": 33
+  },
+
+  "Random panning": {
+    "type": "bool",
+    "name": "Random Panning",
+    "description": "If enabled, each click will be heard randomly, like left, middle, right",
+    "default": false
+  }
+},
+
+	"links": { "homepage": "https://twoorsetp.github.io/cbotliveultimate/index.html", "source": "https://github.com/therealsnopphin/CBot", "community": "https://discord.gg/N2bxXBsqEJ" }
+}
