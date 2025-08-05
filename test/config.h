@@ -23,11 +23,6 @@ inline void saveMenukeyConfig()
 
 inline void writeTutorialKeys()
 {
-    // Create .cbot directory if it doesn't exist
-    if (!std::filesystem::exists(".cbot")) {
-        std::filesystem::create_directory(".cbot");
-    }
-    
     std::println("Writing keys tutorial for Key Input, located at .cbot/KeyCodes.txt");
     std::ofstream outFile(".cbot/KeyCodes.txt");
 
