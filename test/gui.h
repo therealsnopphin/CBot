@@ -41,16 +41,20 @@ namespace gui
 	//player1
 	inline bool m_player1_softclicks = false;
 	inline bool m_player1_hardclicks = false;
+	inline bool m_player1_microclicks = false;
 	inline bool m_player1_whitenoise = false;
 	inline bool m_player1_softclicksclickpack = true;
 	inline bool m_player1_hardclicksclickpack = true;
+	inline bool m_player1_microclicksclickpack = true;
 	inline bool m_player1_whitenoiseclickpack = true;
 	//player2
 	inline bool m_player2_softclicks = false;
 	inline bool m_player2_hardclicks = false;
-	inline bool m_player2_softclicksclickpack = true;
+	inline bool m_player2_microclicks = false;
 	inline bool m_player2_whitenoise = false;
+	inline bool m_player2_softclicksclickpack = true;
 	inline bool m_player2_hardclicksclickpack = true;
+	inline bool m_player2_microclicksclickpack = true;
 	inline bool m_player2_whitenoiseclickpack = true;
 
 	inline float m_whitenoisevolume = 1.0f;
@@ -63,6 +67,8 @@ namespace gui
 	inline float m_maxsoftClickstime = 0.1f;
 	inline float m_minhardClickstime = 2.0f;
 	inline float m_maxhardClickstime = 2.0f;
+	inline float m_minmicroClickstime = 0.05f;
+	inline float m_maxmicroClickstime = 0.05f;
 	inline bool m_randomPanning = false;
 	inline bool m_gameSync = false;
 	inline float m_panningIntensity = 0.5f;

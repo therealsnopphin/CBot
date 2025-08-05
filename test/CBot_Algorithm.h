@@ -2,8 +2,8 @@
 
 enum class ClickType
 {
-	NormalClick, SoftClick, HardClick,
-	NormalRelease, SoftRelease, HardRelease
+	NormalClick, SoftClick, HardClick, MicroClick,
+	NormalRelease, SoftRelease, HardRelease, MicroRelease
 };
 
 struct ClickAudioType
@@ -19,5 +19,5 @@ struct ClickAudio
 
 namespace CBot
 {
-	ClickType CheckClickType(const std::string& ClickPack, bool SoftClick, bool HardClick, bool IsHolding);
+	ClickType CheckClickType(const std::string& ClickPack, bool SoftClick, bool HardClick, bool MicroClick, bool IsHolding);
 }

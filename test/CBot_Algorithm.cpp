@@ -2,7 +2,7 @@
 
 namespace CBot
 {
-	ClickType CheckClickType(const std::string& ClickPack,bool SoftClick, bool HardClick, bool IsHolding)
+	ClickType CheckClickType(const std::string& ClickPack,bool SoftClick, bool HardClick, bool MicroClick, bool IsHolding)
 	{
 		static float PreviousTime = 0;
 		float CurrentTime = 0.0f;
@@ -44,6 +44,14 @@ namespace CBot
 				return ClickType::HardClick;
 			else
 				return ClickType::HardRelease;
+		}
+
+		if (CurrentTime < random::floatRandom(gui::m_minmicroClickstime, gui::m_maxmicroClickstime) && MicroClick)
+		{
+			if (IsHolding)
+				return ClickType::MicroClick;
+			else
+				return ClickType::MicroRelease;
 		}
 
 		if (IsHolding)

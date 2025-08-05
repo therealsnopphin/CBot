@@ -73,9 +73,11 @@ namespace gui
 		// Reset flags
 		m_player1_hardclicksclickpack = true;
 		m_player1_softclicksclickpack = true;
+		m_player1_microclicksclickpack = true;
 		m_player1_whitenoiseclickpack = true;
 		m_player2_hardclicksclickpack = true;
 		m_player2_softclicksclickpack = true;
+		m_player2_microclicksclickpack = true;
 		m_player2_whitenoiseclickpack = true;
 
 		// Clear existing audio maps for clean reload
@@ -97,7 +99,7 @@ namespace gui
 			                         const std::unordered_map<ClickType, std::string>& folderMap,
 			                         std::unordered_map<ClickAudioType, ClickAudio>& audioMap,
 			                         std::unordered_map<ClickType, size_t>& sizeMap,
-			                         bool& softFlag, bool& hardFlag) -> void {
+			                         bool& softFlag, bool& hardFlag, bool& microFlag) -> void {
 			for (const auto& [clickType, folderPath] : folderMap) {
 				if (!std::filesystem::exists(folderPath)) {
 					// Flags For Missing File
@@ -106,6 +108,9 @@ namespace gui
 					}
 					if (clickType == ClickType::HardClick || clickType == ClickType::HardRelease) {
 						hardFlag = false;
+					}
+					if (clickType == ClickType::MicroClick || clickType == ClickType::MicroRelease) {
+						microFlag = false;
 					}
 					continue;
 				}
@@ -142,7 +147,9 @@ namespace gui
 			{ ClickType::SoftClick, m_player1_clickpack_path + "\\softClicks\\" },
 			{ ClickType::SoftRelease, m_player1_clickpack_path + "\\softReleases\\" },
 			{ ClickType::HardClick, m_player1_clickpack_path + "\\hardClicks\\" },
-			{ ClickType::HardRelease, m_player1_clickpack_path + "\\hardReleases\\" }
+			{ ClickType::HardRelease, m_player1_clickpack_path + "\\hardReleases\\" },
+			{ ClickType::MicroClick, m_player1_clickpack_path + "\\microClicks\\" },
+			{ ClickType::MicroRelease, m_player1_clickpack_path + "\\microReleases\\" }
 		};
 
 		std::unordered_map<ClickType, std::string> Player2ClickTypesFolder = {
@@ -151,16 +158,18 @@ namespace gui
 			{ ClickType::SoftClick, m_player2_clickpack_path + "\\softClicks\\" },
 			{ ClickType::SoftRelease, m_player2_clickpack_path + "\\softReleases\\" },
 			{ ClickType::HardClick, m_player2_clickpack_path + "\\hardClicks\\" },
-			{ ClickType::HardRelease, m_player2_clickpack_path + "\\hardReleases\\" }
+			{ ClickType::HardRelease, m_player2_clickpack_path + "\\hardReleases\\" },
+			{ ClickType::MicroClick, m_player2_clickpack_path + "\\microClicks\\" },
+			{ ClickType::MicroRelease, m_player2_clickpack_path + "\\microReleases\\" }
 		};
 
 		loadClickpackFolder(m_player1_clickpack_path, Player1ClickTypesFolder, 
 			                 m_Player1ClickAudios, m_Player1SizeClickAudios,
-			                 m_player1_softclicksclickpack, m_player1_hardclicksclickpack);
+			                 m_player1_softclicksclickpack, m_player1_hardclicksclickpack, m_player1_microclicksclickpack);
 
 		loadClickpackFolder(m_player2_clickpack_path, Player2ClickTypesFolder, 
 			                 m_Player2ClickAudios, m_Player2SizeClickAudios,
-			                 m_player2_softclicksclickpack, m_player2_hardclicksclickpack);
+			                 m_player2_softclicksclickpack, m_player2_hardclicksclickpack, m_player2_microclicksclickpack);
 
 		// Load white noise files efficiently
 		auto loadWhiteNoise = [&](const std::string& basePath, bool& noiseFlag, FMOD::Sound*& sound, FMOD::Channel*& channel) -> void {
@@ -375,6 +384,13 @@ namespace gui
 				}
 				ImGui::EndDisabled();
 
+				ImGui::BeginDisabled(!m_player1_microclicksclickpack);
+				if (ImGui::Checkbox("Enable Player1 Microclicks", &m_player1_microclicks))
+				{
+					config->setSettingValue("Player 1 MicroClicks", m_player1_microclicks);
+				}
+				ImGui::EndDisabled();
+
 				ImGui::BeginDisabled(!m_player1_whitenoiseclickpack);
 				if (ImGui::Checkbox("Enable Player1 WhiteNoise", &m_player1_whitenoise))
 				{
@@ -394,6 +410,13 @@ namespace gui
 				if (ImGui::Checkbox("Enable Player2 Hardclicks", &m_player2_hardclicks))
 				{
 					config->setSettingValue("Player 2 HardClicks", m_player2_hardclicks);
+				}
+				ImGui::EndDisabled();
+
+				ImGui::BeginDisabled(!m_player2_microclicksclickpack);
+				if (ImGui::Checkbox("Enable Player2 Microclicks", &m_player2_microclicks))
+				{
+					config->setSettingValue("Player 2 MicroClicks", m_player2_microclicks);
 				}
 				ImGui::EndDisabled();
 
@@ -440,6 +463,14 @@ namespace gui
 				if (ImGui::InputFloat("Max hardclicks_time", &m_maxhardClickstime))
 				{
 					config->setSettingValue("Max hardclicks_time", m_maxhardClickstime);
+				}
+				if (ImGui::InputFloat("Min microclicks_time", &m_minmicroClickstime)) 
+				{
+					config->setSettingValue("Min microclicks_time", m_minmicroClickstime);
+				}
+				if (ImGui::InputFloat("Max microclicks_time", &m_maxmicroClickstime))
+				{
+					config->setSettingValue("Max microclicks_time", m_maxmicroClickstime);
 				}
 
 
@@ -617,9 +648,11 @@ namespace gui
 
 		m_player1_softclicks = config->getSettingValue<bool>("Player 1 SoftClicks");
 		m_player1_hardclicks = config->getSettingValue<bool>("Player 1 HardClicks");
+		m_player1_microclicks = config->getSettingValue<bool>("Player 1 MicroClicks");
 		m_player1_whitenoise = config->getSettingValue<bool>("Player 1 WhiteNoise");
 		m_player2_softclicks = config->getSettingValue<bool>("Player 2 SoftClicks");
 		m_player2_hardclicks = config->getSettingValue<bool>("Player 2 HardClicks");
+		m_player2_microclicks = config->getSettingValue<bool>("Player 2 MicroClicks");
 		m_player2_whitenoise = config->getSettingValue<bool>("Player 2 WhiteNoise");
 
 		m_whitenoisevolume = config->getSettingValue<float>("PC Noise Volume");
@@ -632,6 +665,8 @@ namespace gui
 		m_maxsoftClickstime = config->getSettingValue<float>("Max softclicks_time");
 		m_minhardClickstime = config->getSettingValue<float>("Min hardclicks_time");
 		m_maxhardClickstime = config->getSettingValue<float>("Max hardclicks_time");
+		m_minmicroClickstime = config->getSettingValue<float>("Min microclicks_time");
+		m_maxmicroClickstime = config->getSettingValue<float>("Max microclicks_time");
 
 		m_currentreverbtype = config->getSettingValue<int>("Reverb effect");
 		m_randomPanning = config->getSettingValue<bool>("Random panning");
