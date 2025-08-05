@@ -473,22 +473,21 @@ namespace gui
 				ImGui::Begin("Reverb");
 				ImGui::Text("Select Reverb Type");
 				
-				// Disable Reverb controls if no clickpacks are loaded
-				// Using the same hasClickpacks variable defined earlier
 				ImGui::BeginDisabled(!hasClickpacks);
 				if (ImGui::Combo("Reverb type: ", &m_currentreverbtype, m_dsps.data(), m_dsps.size()))
 				{
 					config->setSettingValue("Reverb Effect", m_currentreverbtype);
 				}
+				ImGui::EndDisabled();
 				
 				if (!hasClickpacks && m_currentreverbtype != (int)FMOD_DSP_TYPE_UNKNOWN)
 				{
-					// Automatically disable reverb if no clickpacks are loaded
 					m_currentreverbtype = (int)FMOD_DSP_TYPE_UNKNOWN;
 					config->setSettingValue("Reverb Effect", m_currentreverbtype);
-					ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "Reverb effects require clickpacks");
+					ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "Reverb Require ClickPack Load");
 				}
 
+				ImGui::BeginDisabled(!hasClickpacks);
 				switch (m_currentreverbtype)
 				{
 				case (int)FMOD_DSP_TYPE_OSCILLATOR:
