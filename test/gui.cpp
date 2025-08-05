@@ -233,7 +233,7 @@ namespace gui
 	}
 	void loadClickpacks(std::vector<std::string>& vectorclickpacks)
 	{
-		for (const auto& entry : std::filesystem::directory_iterator(".cbot")) {
+		for (const auto& entry : std::filesystem::directory_iterator(".cbot/clickpacks")) {
 			if (std::filesystem::is_directory(entry.status())) {
 				vectorclickpacks.push_back(entry.path().generic_string());
 			}
@@ -641,8 +641,57 @@ namespace gui
 			writeTutorialKeys();
 
 			m_updatefound = CBot::autoupdate::CheckForNewUpdate();
-
+			// update!
 			std::filesystem::create_directory(".cbot");
+			std::filesystem::create_directory(".cbot/clickpacks");
+			
+			try {
+				for (const auto& entry : std::filesystem::directory_iterator(".cbot")) {
+					if (std::filesystem::is_directory(entry.status()) && entry.path().filename() != "clickpacks") {
+						std::string oldPath = entry.path().string();
+						std::string newPath = ".cbot/clickpacks/" + entry.path().filename().string();
+
+						if (!std::filesystem::exists(newPath)) {
+							try {
+								std::filesystem::copy(oldPath, newPath, std::filesystem::copy_options::recursive);
+								std::filesystem::remove_all(oldPath);
+							} catch (const std::exception& e) {
+								std::println("Error moving clickpack {}: {}", oldPath, e.what());
+							}
+						}
+					}
+				}
+			} catch (const std::exception& e) {
+				std::println("Error checking for clickpacks to move: {}", e.what());
+			}
+
+			if (std::filesystem::exists("save.bin")) {
+				try {
+
+					if (!std::filesystem::exists(savefilepath)) {
+						std::filesystem::copy("save.bin", savefilepath);
+						std::filesystem::remove("save.bin");
+						std::println("save.bin in .cbot");
+					}
+				} catch (const std::exception& e) {
+					std::println("Error moving save.bin: {}", e.what());
+				}
+			}
+			
+			// Check if old KeyCodes.txt exists in root directory and move it to .cbot
+			if (std::filesystem::exists("KeyCodes.txt")) {
+				try {
+					// Only move if destination doesn't exist
+					if (!std::filesystem::exists(".cbot/KeyCodes.txt")) {
+						std::filesystem::copy("KeyCodes.txt", ".cbot/KeyCodes.txt");
+						std::filesystem::remove("KeyCodes.txt");
+						std::println("KeyCodes.txt in .cbot/");
+					}
+				} catch (const std::exception& e) {
+					std::println("Error Moving KeyCodes.txt: {}", e.what());
+				}
+			}
+			// basiclly Its File Move ALl File To .cbot It Cleans Fr LoL
 			if (std::filesystem::exists(savefilepath))
 			{
 				loadMenukeyConfig();
