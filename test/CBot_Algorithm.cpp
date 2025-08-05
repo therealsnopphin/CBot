@@ -5,9 +5,29 @@ namespace CBot
 	ClickType CheckClickType(const std::string& ClickPack,bool SoftClick, bool HardClick, bool IsHolding)
 	{
 		static float PreviousTime = 0;
-		DWORD timelocal = timeGetTime();
-		float CurrentTime = (timelocal - PreviousTime) / 1000.f;
-		PreviousTime = timelocal;
+		float CurrentTime = 0.0f;
+		
+		if (gui::m_gameSync)
+		{
+			auto* director = cocos2d::CCDirector::sharedDirector();
+			if (director)
+			{
+				float deltaTime = director->getDeltaTime();
+				CurrentTime = deltaTime;
+			}
+			else
+			{
+				DWORD timelocal = timeGetTime();
+				CurrentTime = (timelocal - PreviousTime) / 1000.0f;
+				PreviousTime = timelocal;
+			}
+		}
+		else
+		{
+			DWORD timelocal = timeGetTime();
+			CurrentTime = (timelocal - PreviousTime) / 1000.0f;
+			PreviousTime = timelocal;
+		}
 
 		if (CurrentTime < random::floatRandom(gui::m_minsoftClickstime, gui::m_maxsoftClickstime) && SoftClick)
 		{
