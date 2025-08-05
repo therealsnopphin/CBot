@@ -283,7 +283,7 @@ namespace gui
 				if (ImGui::InputInt("Menu Key", &m_selectedKey))
 				{
 					if (m_selectedKey < 0) m_selectedKey = 0;
-					if (m_selectedKey > 255) m_selectedKey = 255;
+					if (m_selectedKey > 4356) m_selectedKey = 4356;
 					config->setSettingValue("Menu key", m_selectedKey);
 					saveMenukeyConfig();
 				}

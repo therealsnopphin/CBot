@@ -157,5 +157,6 @@ namespace CBot::fmodengine
 
 		currentchannel->setPaused(false);
 		system->update();
-	}
+	} 
 }
+// bro what
