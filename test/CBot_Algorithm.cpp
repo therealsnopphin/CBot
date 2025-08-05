@@ -7,7 +7,8 @@ namespace CBot
 		static float PreviousTime = 0;
 		float CurrentTime = 0.0f;
 		
-		if (gui::m_gameSync)
+		bool hasClickpacks = !gui::m_Player1ClickAudios.empty() || !gui::m_Player2ClickAudios.empty();
+		if (gui::m_gameSync && hasClickpacks)
 		{
 			auto* director = cocos2d::CCDirector::sharedDirector();
 			if (director)

@@ -56,14 +56,15 @@ namespace CBot::fmodengine
 		currentchannel->setPitch(Pitch);
 		currentchannel->setPriority(0);
 
-		if (gui::m_randomPanning)
+		bool hasLoadedClickpacks = !gui::m_Player1ClickAudios.empty() || !gui::m_Player2ClickAudios.empty();
+		if (gui::m_randomPanning && hasLoadedClickpacks)
 		{
 			float panValue = random::floatRandom(-1.0f, 1.0f) * gui::m_panningIntensity;
 			panValue = std::clamp(panValue, -1.0f, 1.0f);
 			currentchannel->setPan(panValue);
 		}
 
-		if (gui::m_currentreverbtype != (int)FMOD_DSP_TYPE_UNKNOWN)
+		if (gui::m_currentreverbtype != (int)FMOD_DSP_TYPE_UNKNOWN && hasLoadedClickpacks)
 		{
 			FMOD::DSP* reverbdsp = nullptr;
 			FMOD_RESULT dspResult = system->createDSPByType((FMOD_DSP_TYPE)gui::m_currentreverbtype, &reverbdsp);
