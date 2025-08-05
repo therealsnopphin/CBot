@@ -279,10 +279,12 @@ namespace gui
 
 				ImGui::Begin(m_Title.c_str());
 			
-				config->setSettingValue("Menu key", m_selectedKey);
 				//Config button
 				if (ImGui::InputInt("Menu Key", &m_selectedKey))
 				{
+					if (m_selectedKey < 0) m_selectedKey = 0;
+					if (m_selectedKey > 255) m_selectedKey = 255;
+					config->setSettingValue("Menu key", m_selectedKey);
 					saveMenukeyConfig();
 				}
 
