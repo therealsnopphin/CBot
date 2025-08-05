@@ -3,6 +3,7 @@
 
 namespace gui
 {
+	
 	// This function is called once when the hook is initialized
 	// You can use it to set up ImGui styles, fonts, etc.
 
@@ -69,6 +70,7 @@ namespace gui
 
 	void loadcurrentClickpack()
 	{
+		// Reset flags
 		m_player1_hardclicksclickpack = true;
 		m_player1_softclicksclickpack = true;
 		m_player1_whitenoiseclickpack = true;
@@ -76,162 +78,152 @@ namespace gui
 		m_player2_softclicksclickpack = true;
 		m_player2_whitenoiseclickpack = true;
 
-		std::unordered_map<ClickType, std::string> Player1ClickTypesFolder = { { ClickType::NormalClick, gui::m_player1_clickpack_path + "\\Clicks\\" }, { ClickType::NormalRelease,gui::m_player1_clickpack_path + "\\Releases\\" },
- { ClickType::SoftClick, gui::m_player1_clickpack_path + "\\softClicks\\" }, { ClickType::SoftRelease, gui::m_player1_clickpack_path + "\\softReleases\\" } ,
- { ClickType::HardClick, gui::m_player1_clickpack_path + "\\hardClicks\\" }, { ClickType::HardRelease,  gui::m_player1_clickpack_path + "\\hardReleases\\" } };
+		// Clear existing audio maps for clean reload
+		m_Player1ClickAudios.clear();
+		m_Player2ClickAudios.clear();
+		m_Player1SizeClickAudios.clear();
+		m_Player2SizeClickAudios.clear();
 
-		std::unordered_map<ClickType, std::string> Player2ClickTypesFolder = { { ClickType::NormalClick, gui::m_player2_clickpack_path + "\\Clicks\\" }, { ClickType::NormalRelease,gui::m_player2_clickpack_path + "\\Releases\\" },
-{ ClickType::SoftClick, gui::m_player2_clickpack_path + "\\softClicks\\" }, { ClickType::SoftRelease, gui::m_player2_clickpack_path + "\\softReleases\\" } ,
-{ ClickType::HardClick, gui::m_player2_clickpack_path + "\\hardClicks\\" }, { ClickType::HardRelease,  gui::m_player2_clickpack_path + "\\hardReleases\\" } };
+		if (m_whiteplayer1noisechannel) m_whiteplayer1noisechannel->stop();
+		if (m_whiteplayer2noisechannel) m_whiteplayer2noisechannel->stop();
 
+		// Support File Audio
+		static const std::unordered_set<std::string> validExtensions = {
+			".wav", ".mp3", ".ogg", ".flac", ".m4a"
+		};
 
-		int player1clickCount;
+		// Helper lambda to load clickpack files efficiently
+		auto loadClickpackFolder = [&](const std::string& basePath, 
+			                         const std::unordered_map<ClickType, std::string>& folderMap,
+			                         std::unordered_map<ClickAudioType, ClickAudio>& audioMap,
+			                         std::unordered_map<ClickType, size_t>& sizeMap,
+			                         bool& softFlag, bool& hardFlag) -> void {
+			for (const auto& [clickType, folderPath] : folderMap) {
+				if (!std::filesystem::exists(folderPath)) {
+					// Flags For Missing File
+					if (clickType == ClickType::SoftClick || clickType == ClickType::SoftRelease) {
+						softFlag = false;
+					}
+					if (clickType == ClickType::HardClick || clickType == ClickType::HardRelease) {
+						hardFlag = false;
+					}
+					continue;
+				}
 
-		for (auto& clickfolderpath : Player1ClickTypesFolder)
-		{
-			if (std::filesystem::exists(clickfolderpath.second))
-			{
-				player1clickCount = 0;
-				for (auto& entry : std::filesystem::directory_iterator(clickfolderpath.second))
-				{
-					if (entry.is_regular_file())
-					{
-						std::string path = entry.path().string();
-						m_Player1ClickAudios[{clickfolderpath.first, player1clickCount}] = { path };
-						CBot::fmodengine::createSound(entry.path().string());
-						player1clickCount++;
+				int fileCount = 0;
+				try {
+					for (const auto& entry : std::filesystem::directory_iterator(folderPath)) {
+						if (!entry.is_regular_file()) continue;
+						
+						const auto& path = entry.path();
+						const std::string extension = path.extension().string();
+					
+						if (validExtensions.find(extension) == validExtensions.end()) continue;
+						
+						const std::string filePath = path.string();
+						audioMap[{clickType, fileCount}] = { filePath };
+						
+						// Faster Loading + Better Memory Usage Thats All
+						CBot::fmodengine::createSound(filePath, FMOD_CREATECOMPRESSEDSAMPLE);
+						fileCount++;
+					}
+				} catch (const std::filesystem::filesystem_error& e) {
+					// Handle directory access errors gracefully
+					std::println("Error accessing directory {}: {}", folderPath, e.what());
+				}
+				
+				sizeMap[clickType] = std::max(0, fileCount - 1);
+			}
+		};
+
+		std::unordered_map<ClickType, std::string> Player1ClickTypesFolder = {
+			{ ClickType::NormalClick, m_player1_clickpack_path + "\\Clicks\\" },
+			{ ClickType::NormalRelease, m_player1_clickpack_path + "\\Releases\\" },
+			{ ClickType::SoftClick, m_player1_clickpack_path + "\\softClicks\\" },
+			{ ClickType::SoftRelease, m_player1_clickpack_path + "\\softReleases\\" },
+			{ ClickType::HardClick, m_player1_clickpack_path + "\\hardClicks\\" },
+			{ ClickType::HardRelease, m_player1_clickpack_path + "\\hardReleases\\" }
+		};
+
+		std::unordered_map<ClickType, std::string> Player2ClickTypesFolder = {
+			{ ClickType::NormalClick, m_player2_clickpack_path + "\\Clicks\\" },
+			{ ClickType::NormalRelease, m_player2_clickpack_path + "\\Releases\\" },
+			{ ClickType::SoftClick, m_player2_clickpack_path + "\\softClicks\\" },
+			{ ClickType::SoftRelease, m_player2_clickpack_path + "\\softReleases\\" },
+			{ ClickType::HardClick, m_player2_clickpack_path + "\\hardClicks\\" },
+			{ ClickType::HardRelease, m_player2_clickpack_path + "\\hardReleases\\" }
+		};
+
+		loadClickpackFolder(m_player1_clickpack_path, Player1ClickTypesFolder, 
+			                 m_Player1ClickAudios, m_Player1SizeClickAudios,
+			                 m_player1_softclicksclickpack, m_player1_hardclicksclickpack);
+
+		loadClickpackFolder(m_player2_clickpack_path, Player2ClickTypesFolder, 
+			                 m_Player2ClickAudios, m_Player2SizeClickAudios,
+			                 m_player2_softclicksclickpack, m_player2_hardclicksclickpack);
+
+		// Load white noise files efficiently
+		auto loadWhiteNoise = [&](const std::string& basePath, bool& noiseFlag, FMOD::Sound*& sound, FMOD::Channel*& channel) -> void {
+			if (!std::filesystem::exists(basePath)) {
+				noiseFlag = false;
+				return;
+			}
+
+			bool found = false;
+			try {
+				for (const auto& entry : std::filesystem::directory_iterator(basePath)) {
+					if (!entry.is_regular_file()) continue;
+					
+					const std::string filename = entry.path().filename().string();
+					const std::string lowerFilename = [filename] {
+						std::string result = filename;
+						std::transform(result.begin(), result.end(), result.begin(), ::tolower);
+						return result;
+					}();
+					
+					if (lowerFilename.find("whitenoise") != std::string::npos || 
+					    lowerFilename.find("noise") != std::string::npos) {
+						const std::string filePath = entry.path().string();
+						
+						// Use compressed sample for white noise too
+						FMOD_RESULT result = CBot::fmodengine::system->createSound(
+							filePath.c_str(), 
+							FMOD_LOOP_NORMAL | FMOD_CREATECOMPRESSEDSAMPLE, 
+							nullptr, 
+							&sound);
+						
+						if (result == FMOD_OK) {
+							CBot::fmodengine::system->playSound(sound, nullptr, false, &channel);
+							channel->setPaused(true); // Start paused
+							found = true;
+							break;
+						}
 					}
 				}
-				m_Player1SizeClickAudios[clickfolderpath.first] = player1clickCount - 1;
+			} catch (const std::filesystem::filesystem_error& e) {
+				std::println("Error loading white noise: {}", e.what());
 			}
-			else
-			{
-				if (clickfolderpath.first == ClickType::SoftClick || clickfolderpath.first == ClickType::SoftRelease)
-				{
-					m_player1_softclicksclickpack = false;
-				}
+			
+			noiseFlag = found;
+		};
 
+		loadWhiteNoise(m_player1_clickpack_path, m_player1_whitenoiseclickpack, 
+			              m_whiteplayer1noisesound, m_whiteplayer1noisechannel);
 
-				if (clickfolderpath.first == ClickType::HardClick || clickfolderpath.first == ClickType::HardRelease)
-				{
-					m_player1_hardclicksclickpack = false;
-				}
-			}
+		loadWhiteNoise(m_player2_clickpack_path, m_player2_whitenoiseclickpack, 
+			              m_whiteplayer2noisesound, m_whiteplayer2noisechannel);
 
-		}
+		// Synchronize UI states with availability
+		m_player1_softclicks = m_player1_softclicks && m_player1_softclicksclickpack;
+		m_player1_hardclicks = m_player1_hardclicks && m_player1_hardclicksclickpack;
+		m_player1_whitenoise = m_player1_whitenoise && m_player1_whitenoiseclickpack;
 
-		int player2clickCount;
+		m_player2_softclicks = m_player2_softclicks && m_player2_softclicksclickpack;
+		m_player2_hardclicks = m_player2_hardclicks && m_player2_hardclicksclickpack;
+		m_player2_whitenoise = m_player2_whitenoise && m_player2_whitenoiseclickpack;
 
-		for (auto& clickfolderpath : Player2ClickTypesFolder)
-		{
-			if (std::filesystem::exists(clickfolderpath.second))
-			{
-				player2clickCount = 0;
-				for (auto& entry : std::filesystem::directory_iterator(clickfolderpath.second))
-				{
-					if (entry.is_regular_file())
-					{
-						std::string path = entry.path().string();
-						m_Player2ClickAudios[{clickfolderpath.first, player2clickCount}] = { path };
-						CBot::fmodengine::createSound(entry.path().string());
-						player2clickCount++;
-					}
-				}
-				m_Player2SizeClickAudios[clickfolderpath.first] = player2clickCount - 1;
-			}
-			else
-			{
-				if (clickfolderpath.first == ClickType::SoftClick || clickfolderpath.first == ClickType::SoftRelease)
-				{
-					m_player2_softclicksclickpack = false;
-				}
-
-
-				if (clickfolderpath.first == ClickType::HardClick || clickfolderpath.first == ClickType::HardRelease)
-				{
-					m_player2_hardclicksclickpack = false;
-				}
-			}
-
-		}
-		if (std::filesystem::exists(gui::m_player1_clickpack_path))
-		{
-			bool isWhiteNoiseFound = false;
-			for (auto& entry : std::filesystem::directory_iterator(gui::m_player1_clickpack_path))
-			{
-				if (entry.is_regular_file())
-				{
-					std::string strfile = entry.path().string();
-
-
-					isWhiteNoiseFound = strfile.contains("whitenoise") || strfile.contains("noise");
-
-					if (isWhiteNoiseFound)
-					{
-						std::println("Creating sound named {0}, result = {1}", strfile, FMOD_ErrorString(CBot::fmodengine::system->createSound(strfile.c_str(), FMOD_LOOP_NORMAL | FMOD_DEFAULT, nullptr, &m_whiteplayer1noisesound)));
-						std::println("Playing sound named {0}, result is = {1}", strfile, FMOD_ErrorString(CBot::fmodengine::system->playSound(m_whiteplayer1noisesound, nullptr, false, &m_whiteplayer1noisechannel)));
-						break;
-					}
-				}
-			}
-			if (isWhiteNoiseFound == false)
-			{
-				m_player1_whitenoiseclickpack = false;
-
-				m_whiteplayer1noisechannel->stop();
-			}
-		}
-		else
-		{
-			m_player1_whitenoiseclickpack = false;
-
-			m_whiteplayer1noisechannel->stop();
-		}
-
-		if (std::filesystem::exists(gui::m_player2_clickpack_path))
-		{
-			bool isWhiteNoiseFound = false;
-			for (auto& entry : std::filesystem::directory_iterator(gui::m_player2_clickpack_path))
-			{
-				if (entry.is_regular_file())
-				{
-					std::string strfile = entry.path().string();
-
-
-					isWhiteNoiseFound = strfile.contains("whitenoise") || strfile.contains("noise");
-
-					if (isWhiteNoiseFound)
-					{
-						std::println("Creating sound named {0}, result = {1}", strfile, FMOD_ErrorString(CBot::fmodengine::system->createSound(strfile.c_str(), FMOD_LOOP_NORMAL | FMOD_DEFAULT, nullptr, &m_whiteplayer1noisesound)));
-						std::println("Playing sound named {0}, result is = {1}", strfile, FMOD_ErrorString(CBot::fmodengine::system->playSound(m_whiteplayer1noisesound, nullptr, false, &m_whiteplayer1noisechannel)));
-						break;
-					}
-				}
-			}
-			if (isWhiteNoiseFound == false)
-			{
-				m_player2_whitenoiseclickpack = false;
-
-				m_whiteplayer2noisechannel->stop();
-			}
-		}
-		else
-		{
-			m_player2_whitenoiseclickpack = false;
-
-			m_whiteplayer2noisechannel->stop();
-		}
-
-		m_player2_whitenoise = m_player2_whitenoiseclickpack;
-		m_player2_hardclicks = m_player2_hardclicksclickpack;
-		m_player2_softclicks = m_player2_softclicksclickpack;
-
-		m_player1_whitenoise = m_player1_whitenoiseclickpack;
-		m_player1_hardclicks = m_player1_hardclicksclickpack;
-		m_player1_softclicks = m_player1_softclicksclickpack;
-
+		// Save synchronized states to config
 		auto config = geode::Mod::get();
-
 		config->setSettingValue("Player 1 SoftClicks", m_player1_softclicks);
 		config->setSettingValue("Player 1 HardClicks", m_player1_hardclicks);
 		config->setSettingValue("Player 1 WhiteNoise", m_player1_whitenoise);
@@ -366,43 +358,49 @@ namespace gui
 					m_whiteplayer2noisechannel->setPaused(true);
 				}
 
-				//Settings
+				//Settings 
+				ImGui::BeginDisabled(!m_player1_softclicksclickpack); // Fix Ui Bind from Alex
 				if (ImGui::Checkbox("Enable Player1 Softclicks", &m_player1_softclicks))
 				{
-					if (m_player1_softclicksclickpack)
 					config->setSettingValue("Player 1 SoftClicks", m_player1_softclicks);
 				}
+				ImGui::EndDisabled();
+				
+				ImGui::BeginDisabled(!m_player1_hardclicksclickpack);
 				if (ImGui::Checkbox("Enable Player1 Hardclicks", &m_player1_hardclicks))
 				{
-					if (m_player1_hardclicksclickpack)
 					config->setSettingValue("Player 1 HardClicks", m_player1_hardclicks);
 				}
+				ImGui::EndDisabled();
 
+				ImGui::BeginDisabled(!m_player1_whitenoiseclickpack);
 				if (ImGui::Checkbox("Enable Player1 WhiteNoise", &m_player1_whitenoise))
 				{
-					if (m_player1_whitenoiseclickpack)
 					config->setSettingValue("Player 1 WhiteNoise", m_player1_whitenoise);
 				}
+				ImGui::EndDisabled();
 
 				//Settings
+				ImGui::BeginDisabled(!m_player2_softclicksclickpack);
 				if (ImGui::Checkbox("Enable Player2 Softclicks", &m_player2_softclicks))
 				{
-					if (m_player2_softclicksclickpack)
-						config->setSettingValue("Player 2 SoftClicks", m_player2_softclicks);
+					config->setSettingValue("Player 2 SoftClicks", m_player2_softclicks);
 				}
+				ImGui::EndDisabled();
+				
+				ImGui::BeginDisabled(!m_player2_hardclicksclickpack);
 				if (ImGui::Checkbox("Enable Player2 Hardclicks", &m_player2_hardclicks))
 				{
-					if (m_player2_hardclicksclickpack)
-						config->setSettingValue("Player 2 HardClicks", m_player2_hardclicks);
+					config->setSettingValue("Player 2 HardClicks", m_player2_hardclicks);
 				}
+				ImGui::EndDisabled();
 
+				ImGui::BeginDisabled(!m_player2_whitenoiseclickpack);
 				if (ImGui::Checkbox("Enable Player2 WhiteNoise", &m_player2_whitenoise))
 				{
-					if (m_player2_whitenoiseclickpack == true)
-					{
-						config->setSettingValue("Player 2 WhiteNoise", m_player2_whitenoise);
-					}
+					config->setSettingValue("Player 2 WhiteNoise", m_player2_whitenoise);
 				}
+				ImGui::EndDisabled();
 
 				if (ImGui::InputFloat("PC Noise volume", &m_whitenoisevolume))
 				{
@@ -443,18 +441,52 @@ namespace gui
 				}
 
 
+				// Disable Random Panning and Game Sync if no clickpacks are loaded
+				bool hasClickpacks = !m_Player1ClickAudios.empty() || !m_Player2ClickAudios.empty();
+				ImGui::BeginDisabled(!hasClickpacks);
 				if (ImGui::Checkbox("Random Panning", &m_randomPanning))
 				{
 					config->setSettingValue("Random panning", m_randomPanning);
+				}
+				if (ImGui::Checkbox("Game Sync", &m_gameSync))
+				{
+					config->setSettingValue("Game sync", m_gameSync);
+				}
+				ImGui::EndDisabled();
+				if (!hasClickpacks && (m_randomPanning || m_gameSync))
+				{
+					// Automatically disable features if no clickpacks are loaded
+					m_randomPanning = false;
+					m_gameSync = false;
+					config->setSettingValue("Random panning", false);
+					config->setSettingValue("Game sync", false);
+					ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "Random Panning and Game Sync require clickpacks");
+				}
+				if (m_randomPanning)
+				{
+					ImGui::SliderFloat("Panning Intensity", &m_panningIntensity, 0.0f, 1.0f);
+					config->setSettingValue("Panning intensity", m_panningIntensity);
 				}
 
 				ImGui::End();
 
 				ImGui::Begin("Reverb");
 				ImGui::Text("Select Reverb Type");
+				
+				// Disable Reverb controls if no clickpacks are loaded
+				// Using the same hasClickpacks variable defined earlier
+				ImGui::BeginDisabled(!hasClickpacks);
 				if (ImGui::Combo("Reverb type: ", &m_currentreverbtype, m_dsps.data(), m_dsps.size()))
 				{
 					config->setSettingValue("Reverb Effect", m_currentreverbtype);
+				}
+				
+				if (!hasClickpacks && m_currentreverbtype != (int)FMOD_DSP_TYPE_UNKNOWN)
+				{
+					// Automatically disable reverb if no clickpacks are loaded
+					m_currentreverbtype = (int)FMOD_DSP_TYPE_UNKNOWN;
+					config->setSettingValue("Reverb Effect", m_currentreverbtype);
+					ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "Reverb effects require clickpacks");
 				}
 
 				switch (m_currentreverbtype)
@@ -561,6 +593,9 @@ namespace gui
 					ImGui::InputFloat("FMOD_DSP_HIGHPASS_SIMPLE_CUTOFF", &m_reverb::FMOD_DSP_HIGHPASS_SIMPLE_CUTOFF);
 					break;
 				}
+				
+				// End the disabled block for reverb controls
+				ImGui::EndDisabled();
 				ImGui::End();
 			}
 			else
@@ -599,6 +634,8 @@ namespace gui
 
 		m_currentreverbtype = config->getSettingValue<int>("Reverb effect");
 		m_randomPanning = config->getSettingValue<bool>("Random panning");
+		m_gameSync = config->getSettingValue<bool>("Game sync");
+		m_panningIntensity = config->getSettingValue<float>("Panning intensity");
 	}
 	$on_mod(Loaded) {
 		ImGuiCocos::get().setup([] {
