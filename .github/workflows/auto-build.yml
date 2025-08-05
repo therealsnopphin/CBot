@@ -1,0 +1,51 @@
+name: Auto Build on Changes
+
+on:
+  push:
+    branches: [ main, master, dev ]
+    paths:
+      - 'src/**'
+      - 'test/**'
+      - 'include/**'
+      - 'CMakeLists.txt'
+  pull_request:
+    branches: [ main, master, dev ]
+    paths:
+      - 'src/**'
+      - 'test/**'
+      - 'include/**'
+      - 'CMakeLists.txt'
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+        - name: Windows
+          os: windows-latest
+
+        - name: macOS
+          os: macos-latest
+
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build the mod
+        uses: geode-sdk/build-geode-mod@main
+        with:
+          sdk: 'nightly'
+          combine: true
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.config.name }} Build
+          path: build/Release/*.geode
+          if-no-files-found: error

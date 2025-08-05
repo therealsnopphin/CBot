@@ -1,20 +1,9 @@
-name: Build Geode Mod
+name: Create Release
 
 on:
-  workflow_dispatch:
   push:
-    branches:
-      - "**"
-    paths-ignore:
-      - '**.md'
-      - '.gitignore'
-      - 'LICENSE'
-  pull_request:
-    branches: [ main, master, dev ]
-    paths-ignore:
-      - '**.md'
-      - '.gitignore'
-      - 'LICENSE'
+    tags:
+      - 'v*'
 
 jobs:
   build:
@@ -54,15 +43,26 @@ jobs:
           target: ${{ matrix.config.target }}
 
   package:
-    name: Package builds
+    name: Package and Release
     runs-on: ubuntu-latest
     needs: ['build']
 
     steps:
+      - uses: actions/checkout@v4
+      
       - uses: geode-sdk/build-geode-mod/combine@main
         id: build
 
-      - uses: actions/upload-artifact@v4
+      - name: Get version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
         with:
-          name: Build Output
-          path: ${{ steps.build.outputs.build-output }}
+          name: Release v${{ steps.get_version.outputs.VERSION }}
+          draft: false
+          prerelease: false
+          files: ${{ steps.build.outputs.build-output }}
+          generate_release_notes: true

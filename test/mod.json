@@ -227,6 +227,30 @@
     "name": "Random Panning",
     "description": "If enabled, each click will be heard randomly, like left, middle, right",
     "default": false
+  },
+
+  "Game sync": {
+    "type": "bool",
+    "name": "Game Sync",
+    "description": "If enabled, click timing will be synchronized with the game's delta time instead of system time",
+    "default": false
+  },
+
+  "Panning intensity": {
+    "type": "float",
+    "name": "Panning Intensity",
+    "description": "Controls the intensity of the random panning effect (0.0 to 1.0)",
+    "default": 0.5,
+    "min": 0.0,
+    "max": 1.0,
+    "controls": {
+      "arrows": true,
+      "arrow-step": 0.05,
+      "slider": true,
+      "slider-step": 0.05,
+      "input": false
+    }
+
   }
 },
 
