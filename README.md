@@ -1,4 +1,4 @@
-This is gd clickbot, that is used for only showcases. The src is in test folder. Build it from typing in cmd "Geode build"
+This is gd clickbot, that is used for only showcases. The src is in test folder. git clone --recursive https://github.com/therealsnopphin/CBot and Build it from typing in cmd "Geode build"
 
 Discord server:
 Infinite link: https://discord.gg/N2bxXBsqEJ

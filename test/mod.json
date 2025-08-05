@@ -7,8 +7,8 @@
 		"ios": "2.2074"
 	},
 	"id": "snopphin.cbot",
-	"name": "CBot",
-	"version": "3.6.0",
+	"name": "(ClickBot) CBot",
+	"version": "3.7.1",
 	"developer": "Snopphin",
 	"description": "This is geometry dash clickbot and Check for KeyCodes.txt in the geometry dash folder",
  "settings": {
@@ -25,13 +25,13 @@
     "type": "string",
     "name": "Player 1 Clickpack Path",
     "description": "File path to the Player 1 clickpack.",
-    "default": ""
+    "default": "None"
   },
   "Player 2 ClickpackPath": {
     "type": "string",
     "name": "Player 2 Clickpack Path",
     "description": "File path to the Player 2 clickpack.",
-    "default": ""
+    "default": "None"
   },
 
   "Player 1 SoftClicks": {

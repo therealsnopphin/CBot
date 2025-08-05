@@ -19,7 +19,6 @@ namespace gui
 {
 	void initializeImGui();
 	void renderImGui();
-	void GeodeGuiInitalize();
 	void GeodeRender();
 
 	inline std::unordered_map<ClickAudioType, ClickAudio> m_Player1ClickAudios;
@@ -37,8 +36,8 @@ namespace gui
 	inline FMOD::Channel* m_whiteplayer2noisechannel = nullptr;
 	inline FMOD::Sound* m_whiteplayer2noisesound = nullptr;
 
-	inline std::string m_player1_clickpack_path = "";
-	inline std::string m_player2_clickpack_path = "";
+	inline std::string m_player1_clickpack_path = "None";
+	inline std::string m_player2_clickpack_path = "None";
 	//player1
 	inline bool m_player1_softclicks = false;
 	inline bool m_player1_hardclicks = false;
@@ -55,7 +54,7 @@ namespace gui
 	inline bool m_player2_whitenoiseclickpack = true;
 
 	inline float m_whitenoisevolume = 1.0f;
-	//If folder soft clicks for example doesnï¿½t exists, then the user cannot change the soft clicks  
+	//If folder soft clicks for example doesn´t exists, then the user cannot change the soft clicks  
 	inline float m_minVolume = 1.0f;
 	inline float m_maxVolume = 1.0f;
 	inline float m_minPitch = 1.0f;
@@ -66,7 +65,7 @@ namespace gui
 	inline float m_maxhardClickstime = 2.0f;
 	inline bool m_randomPanning = false;
 
-	inline std::string m_Currentversion = "3.6";
+	inline std::string m_Currentversion = "3.7";
 	inline std::string m_Title = "CBot " + m_Currentversion;
 	inline bool m_updatefound = false;
 
@@ -170,10 +169,10 @@ namespace gui
 		inline float FMOD_DSP_HIGHPASS_SIMPLE_CUTOFF = 500.0f;  // Hz
 
 		// FFT
-		// No effect parameters ï¿½ for analysis only
+		// No effect parameters — for analysis only
 
 		// LOUDNESS_METER
-		// No parameters ï¿½ analysis only
+		// No parameters — analysis only
 
 		// CONVOLUTIONREVERB
 		// Needs impulse response file, no direct parameters here

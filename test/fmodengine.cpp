@@ -2,9 +2,8 @@
 
 void CBot::fmodengine::init()
 {   
-	std::println("Creating fmod system for CBot result = {0}", FMOD_ErrorString(FMOD::System_Create(&fmodengine::system)));
-	std::println("Creating fmod.setSoftwareChannels for CBot result = {0}", FMOD_ErrorString(fmodengine::system->setSoftwareChannels(64)));
-	std::println("Initalizig fmod system for CBot result = {0}", FMOD_ErrorString(fmodengine::system->init(4093, FMOD_INIT_NORMAL, nullptr)));
+	std::println("Copying gd's audio fmod system to CBot system");
+	CBot::fmodengine::system = FMODAudioEngine::get()->m_system;
 }
 
 void CBot::fmodengine::createSound(std::string file)
@@ -29,17 +28,7 @@ void CBot::fmodengine::playSound(std::string file, float Pitch, float Volume)
 	currentchannel->setPitch(Pitch);
 	if (gui::m_randomPanning)
 	{
-		float panValue;
-		float randomValue = random::floatRandom(0.0f, 1.0f);
-		
-		if (randomValue < 0.4f)
-			panValue = random::floatRandom(-0.9f, -0.3f);
-		else if (randomValue < 0.8f)
-			panValue = random::floatRandom(0.3f, 0.9f);
-		else
-			panValue = random::floatRandom(-0.2f, 0.2f);
-			
-		currentchannel->setPan(panValue);
+		currentchannel->setPan(random::floatRandom(-0.35f, 0.75f));
 	}
 
 	if (gui::m_currentreverbtype != (int)FMOD_DSP_TYPE_UNKNOWN)

@@ -1,13 +1,13 @@
 #include "pch.h"
 
-class $modify(MyPlayerObject, PlayerObject)
+class $modify(PlayerObject)
 {
 	
 	bool pushButton(PlayerButton playerButton)
 	{
 		if (input::m_playerinput == true)
 		{
-			if (gui::m_player2_clickpack_path != "None" && input::m_isplayer1input == false)
+			if (gui::m_player2_clickpack_path != "None" && this->m_isSecondPlayer == true)
 			{
 				float RandomVolume = random::floatRandom(gui::m_minVolume, gui::m_maxVolume);
 				float RandomPitch = random::floatRandom(gui::m_minPitch, gui::m_maxPitch);
@@ -18,7 +18,7 @@ class $modify(MyPlayerObject, PlayerObject)
 				CBot::fmodengine::playSound(currentclickpath, RandomPitch, RandomVolume);
 			}
 
-			if (gui::m_player1_clickpack_path != "None" && input::m_isplayer1input == true)
+			if (gui::m_player1_clickpack_path != "None" && this->m_isSecondPlayer == false)
 			{
 				float RandomVolume = random::floatRandom(gui::m_minVolume, gui::m_maxVolume);
 				float RandomPitch = random::floatRandom(gui::m_minPitch, gui::m_maxPitch);
@@ -39,7 +39,7 @@ class $modify(MyPlayerObject, PlayerObject)
 	{
 		if (input::m_playerinput == true)
 		{
-			if (gui::m_player2_clickpack_path != "None" && input::m_isplayer1input == false)
+			if (gui::m_player2_clickpack_path != "None" && this->m_isSecondPlayer == true)
 			{
 				float RandomVolume = random::floatRandom(gui::m_minVolume, gui::m_maxVolume);
 				float RandomPitch = random::floatRandom(gui::m_minPitch, gui::m_maxPitch);
@@ -50,7 +50,7 @@ class $modify(MyPlayerObject, PlayerObject)
 				CBot::fmodengine::playSound(currentclickpath, RandomPitch, RandomVolume);
 			}
 
-			if (gui::m_player1_clickpack_path != "None" && input::m_isplayer1input == true)
+			if (gui::m_player1_clickpack_path != "None" && this->m_isSecondPlayer == false)
 			{
 				float RandomVolume = random::floatRandom(gui::m_minVolume, gui::m_maxVolume);
 				float RandomPitch = random::floatRandom(gui::m_minPitch, gui::m_maxPitch);
