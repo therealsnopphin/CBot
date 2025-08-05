@@ -1,0 +1,39 @@
+name: Code Quality Check
+
+on:
+  push:
+    branches: [ main, master, dev ]
+    paths:
+      - '**.cpp'
+      - '**.h'
+      - '**.hpp'
+  pull_request:
+    branches: [ main, master, dev ]
+    paths:
+      - '**.cpp'
+      - '**.h'
+      - '**.hpp'
+
+jobs:
+  cpp-linter:
+    name: C++ Linter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: C++ Linter
+        uses: cpp-linter/cpp-linter-action@v2
+        id: linter
+        with:
+          style: file
+          tidy-checks: ''
+          files-changed-only: true
+          lines-changed-only: true
+          thread-comments: true
+          ignore: 'build'
+          database: 'build'
+          extra-args: '-std=c++17'
+          
+      - name: Fail fast
+        if: steps.linter.outputs.checks-failed > 0
+        run: exit 1
