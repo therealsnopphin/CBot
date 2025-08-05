@@ -260,6 +260,19 @@ namespace gui
 		{
 			saveMenukeyConfig();
 		}
+		
+		if (ImGui::Button("Show Keybind Config"))
+		{
+			writeTutorialKeys();
+			#ifdef _WIN32
+			system("notepad .cbot/KeyCodes.txt");
+			#else
+			system("xdg-open .cbot/KeyCodes.txt");
+			#endif
+		}
+		
+		ImGui::SameLine();
+		ImGui::Text("Current: %d", m_selectedKey);
 
 		ImGui::Text("We currently deceted\nthat new version of CBot has been found\ngo to https://github.com/therealsnopphin/CBot/releases\nto update CBot");
 
@@ -296,6 +309,19 @@ namespace gui
 					config->setSettingValue("Menu key", m_selectedKey);
 					saveMenukeyConfig();
 				}
+				
+				if (ImGui::Button("Show Keybind Config"))
+				{
+					writeTutorialKeys();
+					#ifdef _WIN32
+					system("notepad .cbot/KeyCodes.txt");
+					#else
+					system("xdg-open .cbot/KeyCodes.txt");
+					#endif
+				}
+				
+				ImGui::SameLine();
+				ImGui::Text("Current: %d", m_selectedKey);
 
 				//Clickpack
 				{
