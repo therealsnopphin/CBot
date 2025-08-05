@@ -30,7 +30,7 @@ namespace CBot::fmodengine
 				system->createSound(file.c_str(), FMOD_DEFAULT, nullptr, &sound);
 				sounds[file] = sound;
 			}
-			std::println("...", file, FMOD_ErrorString(result));
+			std::println("Loaded", file, FMOD_ErrorString(result));
 		}
 	}
 
