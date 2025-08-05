@@ -203,6 +203,7 @@ namespace gui
 			} catch (const std::filesystem::filesystem_error& e) {
 				std::println("Error loading white noise: {}", e.what());
 			}
+
 			
 			noiseFlag = found;
 		};
@@ -224,6 +225,87 @@ namespace gui
 
 		// Save synchronized states to config
 		auto config = geode::Mod::get();
+
+		}
+		if (std::filesystem::exists(gui::m_player1_clickpack_path))
+		{
+			bool isWhiteNoiseFound = false;
+			for (auto& entry : std::filesystem::directory_iterator(gui::m_player1_clickpack_path))
+			{
+				if (entry.is_regular_file())
+				{
+					std::string strfile = entry.path().string();
+
+
+					isWhiteNoiseFound = strfile.contains("whitenoise") || strfile.contains("noise");
+
+					if (isWhiteNoiseFound)
+					{
+						std::println("Creating sound named {0}, result = {1}", strfile, FMOD_ErrorString(CBot::fmodengine::system->createSound(strfile.c_str(), FMOD_LOOP_NORMAL | FMOD_DEFAULT, nullptr, &m_whiteplayer1noisesound)));
+						std::println("Playing sound named {0}, result is = {1}", strfile, FMOD_ErrorString(CBot::fmodengine::system->playSound(m_whiteplayer1noisesound, nullptr, false, &m_whiteplayer1noisechannel)));
+						break;
+					}
+				}
+			}
+			if (isWhiteNoiseFound == false)
+			{
+				m_player1_whitenoiseclickpack = false;
+
+				m_whiteplayer1noisechannel->stop();
+			}
+		}
+		else
+		{
+			m_player1_whitenoiseclickpack = false;
+
+			m_whiteplayer1noisechannel->stop();
+		}
+
+		if (std::filesystem::exists(gui::m_player2_clickpack_path))
+		{
+			bool isWhiteNoiseFound = false;
+			for (auto& entry : std::filesystem::directory_iterator(gui::m_player2_clickpack_path))
+			{
+				if (entry.is_regular_file())
+				{
+					std::string strfile = entry.path().string();
+
+
+					isWhiteNoiseFound = strfile.contains("whitenoise") || strfile.contains("noise");
+
+					if (isWhiteNoiseFound)
+					{
+						std::println("Creating sound named {0}, result = {1}", strfile, FMOD_ErrorString(CBot::fmodengine::system->createSound(strfile.c_str(), FMOD_LOOP_NORMAL | FMOD_DEFAULT, nullptr, &m_whiteplayer1noisesound)));
+						std::println("Playing sound named {0}, result is = {1}", strfile, FMOD_ErrorString(CBot::fmodengine::system->playSound(m_whiteplayer1noisesound, nullptr, false, &m_whiteplayer1noisechannel)));
+						break;
+					}
+				}
+			}
+			if (isWhiteNoiseFound == false)
+			{
+				m_player2_whitenoiseclickpack = false;
+
+				m_whiteplayer2noisechannel->stop();
+			}
+		}
+		else
+		{
+			m_player2_whitenoiseclickpack = false;
+
+			m_whiteplayer2noisechannel->stop();
+		}
+
+		m_player2_whitenoise = m_player2_whitenoiseclickpack;
+		m_player2_hardclicks = m_player2_hardclicksclickpack;
+		m_player2_softclicks = m_player2_softclicksclickpack;
+
+		m_player1_whitenoise = m_player1_whitenoiseclickpack;
+		m_player1_hardclicks = m_player1_hardclicksclickpack;
+		m_player1_softclicks = m_player1_softclicksclickpack;
+
+		auto config = geode::Mod::get();
+
+
 		config->setSettingValue("Player 1 SoftClicks", m_player1_softclicks);
 		config->setSettingValue("Player 1 HardClicks", m_player1_hardclicks);
 		config->setSettingValue("Player 1 WhiteNoise", m_player1_whitenoise);
@@ -279,12 +361,15 @@ namespace gui
 
 				ImGui::Begin(m_Title.c_str());
 			
+				config->setSettingValue("Menu key", m_selectedKey);
 				//Config button
 				if (ImGui::InputInt("Menu Key", &m_selectedKey))
 				{
+
 					if (m_selectedKey < 0) m_selectedKey = 0;
 					if (m_selectedKey > 4356) m_selectedKey = 4356;
 					config->setSettingValue("Menu key", m_selectedKey);
+
 					saveMenukeyConfig();
 				}
 
@@ -404,6 +489,45 @@ namespace gui
 				}
 				ImGui::EndDisabled();
 
+				//Settings
+				if (ImGui::Checkbox("Enable Player1 Softclicks", &m_player1_softclicks))
+				{
+					if (m_player1_softclicksclickpack)
+					config->setSettingValue("Player 1 SoftClicks", m_player1_softclicks);
+				}
+				if (ImGui::Checkbox("Enable Player1 Hardclicks", &m_player1_hardclicks))
+				{
+					if (m_player1_hardclicksclickpack)
+					config->setSettingValue("Player 1 HardClicks", m_player1_hardclicks);
+				}
+
+				if (ImGui::Checkbox("Enable Player1 WhiteNoise", &m_player1_whitenoise))
+				{
+					if (m_player1_whitenoiseclickpack)
+					config->setSettingValue("Player 1 WhiteNoise", m_player1_whitenoise);
+				}
+
+				//Settings
+				if (ImGui::Checkbox("Enable Player2 Softclicks", &m_player2_softclicks))
+				{
+					if (m_player2_softclicksclickpack)
+						config->setSettingValue("Player 2 SoftClicks", m_player2_softclicks);
+				}
+				if (ImGui::Checkbox("Enable Player2 Hardclicks", &m_player2_hardclicks))
+				{
+					if (m_player2_hardclicksclickpack)
+						config->setSettingValue("Player 2 HardClicks", m_player2_hardclicks);
+				}
+
+				if (ImGui::Checkbox("Enable Player2 WhiteNoise", &m_player2_whitenoise))
+				{
+					if (m_player2_whitenoiseclickpack == true)
+					{
+						config->setSettingValue("Player 2 WhiteNoise", m_player2_whitenoise);
+					}
+				}
+
+
 				if (ImGui::InputFloat("PC Noise volume", &m_whitenoisevolume))
 				{
 					config->setSettingValue("PC Noise Volume", m_whitenoisevolume);
@@ -442,14 +566,15 @@ namespace gui
 					config->setSettingValue("Max hardclicks_time", m_maxhardClickstime);
 				}
 
-
 				// Disable Random Panning and Game Sync if no clickpacks are loaded
 				bool hasClickpacks = !m_Player1ClickAudios.empty() || !m_Player2ClickAudios.empty();
 				ImGui::BeginDisabled(!hasClickpacks);
+
 				if (ImGui::Checkbox("Random Panning", &m_randomPanning))
 				{
 					config->setSettingValue("Random panning", m_randomPanning);
 				}
+
 				if (ImGui::Checkbox("Game Sync", &m_gameSync))
 				{
 					config->setSettingValue("Game sync", m_gameSync);
@@ -470,16 +595,20 @@ namespace gui
 					config->setSettingValue("Panning intensity", m_panningIntensity);
 				}
 
+
 				ImGui::End();
 
 				ImGui::Begin("Reverb");
 				ImGui::Text("Select Reverb Type");
+
 				
 				ImGui::BeginDisabled(!hasClickpacks);
+
 				if (ImGui::Combo("Reverb type: ", &m_currentreverbtype, m_dsps.data(), m_dsps.size()))
 				{
 					config->setSettingValue("Reverb Effect", m_currentreverbtype);
 				}
+
 				ImGui::EndDisabled();
 				
 				if (!hasClickpacks && m_currentreverbtype != (int)FMOD_DSP_TYPE_UNKNOWN)
@@ -488,6 +617,7 @@ namespace gui
 					config->setSettingValue("Reverb Effect", m_currentreverbtype);
 					ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "Reverb Require ClickPack Load");
 				}
+
 
 				ImGui::BeginDisabled(!hasClickpacks);
 				switch (m_currentreverbtype)
@@ -597,6 +727,7 @@ namespace gui
 				
 				// End the disabled block for reverb controls
 				ImGui::EndDisabled();
+
 				ImGui::End();
 			}
 			else
@@ -637,6 +768,7 @@ namespace gui
 		m_randomPanning = config->getSettingValue<bool>("Random panning");
 		m_gameSync = config->getSettingValue<bool>("Game sync");
 		m_panningIntensity = config->getSettingValue<float>("Panning intensity");
+
 	}
 	$on_mod(Loaded) {
 		ImGuiCocos::get().setup([] {
@@ -645,6 +777,7 @@ namespace gui
 			m_updatefound = CBot::autoupdate::CheckForNewUpdate();
 			// update!
 			std::filesystem::create_directory(".cbot");
+
 			std::filesystem::create_directory(".cbot/clickpacks");
 			
 			try {
@@ -698,6 +831,12 @@ namespace gui
 			{
 				loadMenukeyConfig();
 			}
+
+			if (std::filesystem::exists(savefilepath))
+			{
+				loadMenukeyConfig();
+			}
+
 			initializeImGui();
 			// this runs after imgui has been setup,
 			// its a callback as imgui will be re initialized when toggling fullscreen,

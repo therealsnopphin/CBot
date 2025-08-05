@@ -3,10 +3,40 @@
 #include "gui.h"
 #include <algorithm>
 
+
 namespace CBot::fmodengine
 {
 
 	void init()
+
+void CBot::fmodengine::init()
+{   
+	std::println("Copying gd's audio fmod system to CBot system");
+	CBot::fmodengine::system = FMODAudioEngine::get()->m_system;
+}
+
+void CBot::fmodengine::createSound(std::string file)
+{
+	std::println("Creating sound named {0}, result = {1}", file, FMOD_ErrorString(fmodengine::system->createSound(file.c_str(), FMOD_DEFAULT, nullptr, &fmodengine::sound)));
+
+	sounds[file] = sound;
+}
+
+void CBot::fmodengine::playSound(std::string file, float Pitch, float Volume)
+{
+	FMOD::Channel* currentchannel = nullptr;
+	FMOD_RESULT result_sound = fmodengine::system->playSound(sounds[file], nullptr, false, &currentchannel);
+
+	if (result_sound != FMOD_RESULT::FMOD_OK)
+	{
+		std::println("Error while playing sound named {0}, result = {1}", file, FMOD_ErrorString(result_sound));
+		return;
+	}
+
+	currentchannel->setVolume(Volume);
+	currentchannel->setPitch(Pitch);
+	if (gui::m_randomPanning)
+
 	{
 		std::println("Wait");
 		CBot::fmodengine::system = FMODAudioEngine::get()->m_system;

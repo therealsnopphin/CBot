@@ -1,7 +1,11 @@
 #pragma once
 
 
+
 inline constexpr const char* savefilepath = ".cbot/save.bin";
+
+inline constexpr const char* savefilepath = "save.bin";
+
 
 inline void loadMenukeyConfig()
 {
@@ -23,8 +27,13 @@ inline void saveMenukeyConfig()
 
 inline void writeTutorialKeys()
 {
+
     std::println("Writing keys tutorial for Key Input, located at .cbot/KeyCodes.txt");
     std::ofstream outFile(".cbot/KeyCodes.txt");
+
+    std::println("Writing keys tutorial for Key Input, located at gd folder/KeyCodes.txt");
+    std::ofstream outFile("KeyCodes.txt");
+
 
     outFile <<
         "    KEY_Unknown = -1,\n"
