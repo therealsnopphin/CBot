@@ -33,7 +33,7 @@ int UniqueRandom::getNext()
 {
 	if (!initialized || currentIndex >= indices.size())
 	{
-		return -1; // Should not happen if used correctly
+		return -1; 
 	}
 	
 	return indices[currentIndex++];
