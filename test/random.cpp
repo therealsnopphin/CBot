@@ -16,34 +16,6 @@ namespace random
 			pcg32(); // advance state once
 		}
 
-void UniqueRandom::reset(int min, int max)
-{
-	indices.clear();
-	for (int i = min; i <= max; ++i)
-	{
-		indices.push_back(i);
-	}
-	
-	std::shuffle(indices.begin(), indices.end(), std::default_random_engine(pcg32()));
-	currentIndex = 0;
-	initialized = true;
-}
-
-int UniqueRandom::getNext()
-{
-	if (!initialized || currentIndex >= indices.size())
-	{
-		return -1; 
-	}
-	
-	return indices[currentIndex++];
-}
-
-bool UniqueRandom::hasMore() const
-{
-	return initialized && currentIndex < indices.size();
-}
-
 		uint64_t oldstate = state;
 		state = oldstate * 6364136223846793005ULL + inc;
 
@@ -51,6 +23,34 @@ bool UniqueRandom::hasMore() const
 		uint32_t rot = static_cast<uint32_t>(oldstate >> 59u);
 
 		return (xorshifted >> rot) | (xorshifted << ((32 - rot) & 31));
+	}
+
+	void UniqueRandom::reset(int min, int max)
+	{
+		indices.clear();
+		for (int i = min; i <= max; ++i)
+		{
+			indices.push_back(i);
+		}
+		
+		std::shuffle(indices.begin(), indices.end(), std::default_random_engine(pcg32()));
+		currentIndex = 0;
+		initialized = true;
+	}
+
+	int UniqueRandom::getNext()
+	{
+		if (!initialized || currentIndex >= indices.size())
+		{
+			return -1; 
+		}
+		
+		return indices[currentIndex++];
+	}
+
+	bool UniqueRandom::hasMore() const
+	{
+		return initialized && currentIndex < indices.size();
 	}
 
 	void initalize()
