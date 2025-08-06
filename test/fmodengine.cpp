@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 
 void CBot::fmodengine::init()
 {   
@@ -8,16 +8,18 @@ void CBot::fmodengine::init()
 
 void CBot::fmodengine::createSound(std::string file)
 {
-	std::println("Creating sound named {0}, result = {1}", file, FMOD_ErrorString(fmodengine::system->createSound(file.c_str(), FMOD_DEFAULT, nullptr, &fmodengine::sound)));
-
-	sounds[file] = sound;
+	futures.push_back(std::async(std::launch::async, [file]() {
+		FMOD::Sound* ramclicksound = nullptr;
+		std::println("Creating sound named {0}, result = {1}", file, FMOD_ErrorString(fmodengine::system->createSound(file.c_str(), FMOD_DEFAULT | FMOD_CREATESAMPLE, nullptr, &ramclicksound)));
+		std::lock_guard<std::mutex> lock(mutex);
+		sounds[file] = ramclicksound;
+		}));
 }
 
 void CBot::fmodengine::playSound(std::string file, float Pitch, float Volume)
 {
 	FMOD::Channel* currentchannel = nullptr;
-	FMOD_RESULT result_sound = fmodengine::system->playSound(sounds[file], nullptr, false, &currentchannel);
-
+	FMOD_RESULT result_sound = fmodengine::system->playSound(sounds[file], nullptr, true, &currentchannel);
 	if (result_sound != FMOD_RESULT::FMOD_OK)
 	{
 		std::println("Error while playing sound named {0}, result = {1}", file, FMOD_ErrorString(result_sound));
@@ -146,6 +148,7 @@ void CBot::fmodengine::playSound(std::string file, float Pitch, float Volume)
 		*/
 		currentchannel->addDSP(0, reverbdsp);
 	}
+	currentchannel->setPaused(false);
 
 	fmodengine::system->update();
 }

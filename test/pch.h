@@ -18,12 +18,13 @@
 #include <Geode/modify/GJBaseGameLayer.hpp>
 #include <Geode/modify/PlayerObject.hpp>
 #include <Geode/modify/CCKeyboardDispatcher.hpp>
+#include <future>
 #include <print>
-#include "json.hpp"
-#include "random.h"
 #include <urlmon.h>
 #include <fstream>
 #include <timeapi.h>
+
+#include "random.h"
 #include "gjbasegamelayer.h"
 #include "CBot_Algorithm.h"
 #include "autoupdate.h"
