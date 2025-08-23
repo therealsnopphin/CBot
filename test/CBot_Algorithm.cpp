@@ -9,7 +9,7 @@ namespace CBot
 		float CurrentTime = (timelocal - PreviousTime) / 1000.f;
 		PreviousTime = timelocal;
 
-		if (CurrentTime < random::floatRandom(gui::m_minsoftClickstime, gui::m_maxsoftClickstime) && SoftClick)
+		if (CurrentTime < random::floatRandom(m_minsoftClickstime, m_maxsoftClickstime) && SoftClick)
 		{
 			if (IsHolding)
 				return ClickType::SoftClick;
@@ -17,7 +17,7 @@ namespace CBot
 				return ClickType::SoftRelease;
 		}
 
-		if (CurrentTime > random::floatRandom(gui::m_minhardClickstime, gui::m_maxhardClickstime) && HardClick)
+		if (CurrentTime > random::floatRandom(m_minhardClickstime, m_maxhardClickstime) && HardClick)
 		{
 			if (IsHolding)
 				return ClickType::HardClick;

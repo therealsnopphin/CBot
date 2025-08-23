@@ -13,6 +13,7 @@ project(test-mod)
 
 file(GLOB SOURCES
     "*.cpp"
+    "*.c"
     "*.hpp"
     "*.h"
     "*.lib"

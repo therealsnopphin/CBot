@@ -7,7 +7,7 @@ inline void loadMenukeyConfig()
 {
     std::ifstream configFile(savefilepath, std::ios::binary);
 
-    configFile.read((char*)&gui::m_selectedKey, sizeof(gui::m_selectedKey));
+    configFile.read((char*)&CBot::m_selectedKeyIndex, sizeof(CBot::m_selectedKeyIndex));
 
     configFile.close();
 }
@@ -15,7 +15,7 @@ inline void loadMenukeyConfig()
 inline void saveMenukeyConfig()
 {
     std::ofstream configFile(savefilepath, std::ios::binary);
-    configFile.write((char*)&gui::m_selectedKey, sizeof(gui::m_selectedKey));
+    configFile.write((char*)&CBot::m_selectedKeyIndex, sizeof(CBot::m_selectedKeyIndex));
 
     configFile.close();
 }

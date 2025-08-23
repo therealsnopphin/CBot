@@ -10,7 +10,7 @@ bool CBot::autoupdate::CheckForNewUpdate()
     // Read and display the HTML content
     std::ifstream file(localFile);
     std::string line;
-    std::string toFind = "CBot " + gui::m_Currentversion;
+    std::string toFind = "CBot " + m_Currentversion;
 
     while (std::getline(file, line)) {
         if (line.contains(toFind)) {

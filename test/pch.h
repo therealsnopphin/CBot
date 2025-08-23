@@ -14,16 +14,22 @@
 #include <Geode/fmod/fmod_errors.h>
 
 #include <Geode/modify/FMODAudioEngine.hpp>
+#include "../build/_deps/imgui-src/misc/cpp/imgui_stdlib.h"
 #include <imgui-cocos.hpp>
 #include <Geode/modify/GJBaseGameLayer.hpp>
+#include <Geode/modify/PlayLayer.hpp>
 #include <Geode/modify/PlayerObject.hpp>
 #include <Geode/modify/CCKeyboardDispatcher.hpp>
+#include <Geode/modify/GameManager.hpp>
+#include <Geode/modify/CCScheduler.hpp>
+#include "safetyhook.hpp"
 #include <future>
 #include <print>
 #include <urlmon.h>
 #include <fstream>
 #include <timeapi.h>
 
+#include "macro.h"
 #include "random.h"
 #include "gjbasegamelayer.h"
 #include "CBot_Algorithm.h"
@@ -32,5 +38,6 @@
 #include "fmodengine.h"
 #include "gui.h"
 #include "config.h"
+#include "GameManager.h"
 
 #endif //PCH_H
