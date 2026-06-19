@@ -1,0 +1,14 @@
+{
+	"geode": "5.7.1",
+	"gd": {
+		"win": "2.2081"
+	},
+	"id": "snopphin.cbot",
+	"name": "CBot",
+	"version": "v1.0.0",
+	"developer": "Snopphin",
+	"description": "Loads clickpack and plays clicks when jumping",
+	"dependencies": {
+		"geode.node-ids": ">=v1.23.3"
+	}
+}
